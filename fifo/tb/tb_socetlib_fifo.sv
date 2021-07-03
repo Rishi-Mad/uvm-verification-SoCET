@@ -21,7 +21,7 @@ module tb_socetlib_fifo();
     string tb_block;
 
     socetlib_fifo #(
-        .WIDTH(`TB_WIDTH),
+        .T(logic [`TB_WIDTH-1:0]),
         .DEPTH(`TB_DEPTH)
     ) DUT (
         .*

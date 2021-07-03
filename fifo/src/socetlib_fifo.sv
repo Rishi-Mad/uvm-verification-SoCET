@@ -1,8 +1,8 @@
 
 
 module socetlib_fifo #(
-    parameter WIDTH = 8, // bits per data word
-    parameter DEPTH = 8, // total FIFO entries
+    parameter type T = logic [7:0], // total FIFO entries
+    parameter DEPTH = 8,
     parameter ADDR_BITS = $clog2(DEPTH)
 )(
     input CLK,
@@ -10,13 +10,13 @@ module socetlib_fifo #(
     input WEN,
     input REN,
     input clear,
-    input [WIDTH-1:0] wdata,
+    input T wdata,
     output logic full,
     output logic empty,
     output logic underrun, 
     output logic overrun,
     output logic [ADDR_BITS-1:0] count,
-    output logic [WIDTH-1:0] rdata
+    output T rdata
 );
 
     // Parameter checking
@@ -24,10 +24,6 @@ module socetlib_fifo #(
     // Width can be any number of bits > 1, but depth must be a power-of-2 to accomodate addressing scheme
     // Address bits should not be changed by the user.
     generate
-        if(WIDTH < 1) begin
-            $error("%m: WIDTH must be >= 1!");
-        end
-
         if(DEPTH == 0 || (DEPTH & (DEPTH - 1) != 0)) begin
             $error("%m: DEPTH must be a power of 2 >= 1!");
         end
@@ -37,13 +33,10 @@ module socetlib_fifo #(
         end
     endgenerate
     
-    // FIFO data word internal typedef 
-    typedef logic [WIDTH-1:0] FIFOWord;
-    
     logic full_internal, full_next, empty_internal, empty_next;
     logic overrun_next, underrun_next;
     logic [ADDR_BITS-1:0] write_ptr, write_ptr_next, read_ptr, read_ptr_next;
-    FIFOWord [DEPTH-1:0] fifo, fifo_next;
+    T [DEPTH-1:0] fifo, fifo_next;
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin
