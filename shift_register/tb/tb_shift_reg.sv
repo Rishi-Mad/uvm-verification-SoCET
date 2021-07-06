@@ -8,7 +8,7 @@
 
 `timescale 1ns / 10ps
 
-module tb_stp_sr_4_msb();
+module tb_shift_reg();
   // Define parameters
   // Common parameters
   localparam CLK_PERIOD        = 2.5;
@@ -125,7 +125,7 @@ module tb_stp_sr_4_msb();
   end
 
   // DUT Portmap
-  stp_sr_4_msb DUT (.clk(tb_clk), .nRST(tb_nRST), 
+  shift_reg DUT (.clk(tb_clk), .nRST(tb_nRST), 
                     .serial_in(tb_serial_in), 
                     .shift_enable(tb_shift_enable), 
                     .parallel_out(tb_parallel_out));

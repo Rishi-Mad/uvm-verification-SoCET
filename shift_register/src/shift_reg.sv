@@ -1,5 +1,6 @@
 // Author:      Huy-Minh Tran
 // Description: Flex Shift Register
+`timescale 1ns / 10ps
 module shift_reg
 #(
 	parameter NUM_BITS = 4,
@@ -12,8 +13,8 @@ module shift_reg
 	input wire serial_in,
 	output wire [NUM_BITS-1:0] parallel_out 
 );
-  reg [NUM_BITS-1:0] q;
-	reg [NUM_BITS-1:0] nRST;
+
+  	reg [NUM_BITS-1:0] q, n_q;
 
 	assign parallel_out = q;
 
