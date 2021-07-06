@@ -23,7 +23,7 @@ module tb_counter();
   
   // Declare DUT portmap signals
   reg tb_clk;
-  reg tb_n_rst;
+  reg tb_nRST;
   reg tb_clear;
   reg tb_count_enable;
   reg [(NUM_BIT_CNT - 1):0] tb_overflow_val;
@@ -41,14 +41,14 @@ module tb_counter();
   task reset_dut;
   begin
     // Activate the reset
-    tb_n_rst = 1'b0;
+    tb_nRST = 1'b0;
     // Maintain the reset for more than one cycle
     @(posedge tb_clk);
     @(posedge tb_clk);
 
     // Wait until safely away from rising edge of the clock before releasing
     @(negedge tb_clk);
-    tb_n_rst = 1'b1;
+    tb_nRST = 1'b1;
     tb_count_enable = 1'b0;
     // Leave out of reset for a couple cycles before allowing other stimulus
     // Wait for negative clock edges, 
@@ -104,14 +104,14 @@ module tb_counter();
   end
   
   // DUT Port map
-  flex_counter DUT(.clk(tb_clk), .n_rst(tb_n_rst), .clear(tb_clear), .count_enable(tb_count_enable)
+  flex_counter DUT(.clk(tb_clk), .nRST(tb_nRST), .clear(tb_clear), .count_enable(tb_count_enable)
     , .overflow_val(tb_overflow_val), .count_out(tb_count_out), .overflow_flag(tb_overflow_flag));
   
   // Test bench main process
   initial
   begin
     // Initialize all of the test inputs
-    tb_n_rst  = 1'b1;              // Initialize to be inactive
+    tb_nRST  = 1'b1;              // Initialize to be inactive
     tb_clear  = 0; // Initialize input to inactive  value
     tb_test_num = 0;               // Initialize test case counter
     tb_test_case = "Test bench initializaton";
@@ -122,7 +122,7 @@ module tb_counter();
     tb_test_num = tb_test_num + 1;
     tb_test_case = "Power on Reset";
     #(0.1);
-    tb_n_rst  = 1'b0;    // Activate reset
+    tb_nRST  = 1'b0;    // Activate reset
     
     #(CLK_PERIOD * 0.5);
 
@@ -138,7 +138,7 @@ module tb_counter();
     // Release the reset away from a clock edge
     @(posedge tb_clk);
     #(2 * FF_HOLD_TIME);
-    tb_n_rst  = 1'b1;   // Deactivate the chip reset
+    tb_nRST  = 1'b1;   // Deactivate the chip reset
     #0.1;
     // Check that internal state was correctly keep after reset release
     check_output_count(RESET_OUTPUT_VALUE, 
