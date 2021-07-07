@@ -1,4 +1,3 @@
-// Created:     9/22/2020
 // Author:      Huy-Minh Tran
 // Description: Counter Testbench
 
@@ -7,12 +6,13 @@
 // Setup time for data relative to clock: 190ps
 // Hold time for data relative to clock: 10ps
 
-`timescale 1ns / 10ps
+`ifndef NUM_BIT_CNT
+    `define NUM_BIT_CNT 4
+`endif
 
-module tb_counter();
+module tb_socetlib_counter();
 
   // Define local parameters used by the test bench
-  localparam  NUM_BIT_CNT   = 4;
   localparam  CLK_PERIOD    = 2.5;
   localparam  FF_SETUP_TIME = 0.190;
   localparam  FF_HOLD_TIME  = 0.100;
@@ -26,8 +26,8 @@ module tb_counter();
   reg tb_nRST;
   reg tb_clear;
   reg tb_count_enable;
-  reg [(NUM_BIT_CNT - 1):0] tb_overflow_val;
-  reg [(NUM_BIT_CNT - 1):0] tb_count_out;
+  reg [(`NUM_BIT_CNT - 1):0] tb_overflow_val;
+  reg [(`NUM_BIT_CNT - 1):0] tb_count_out;
   reg tb_overflow_flag;
   
   // Declare test bench signals
@@ -60,7 +60,7 @@ module tb_counter();
 
   // Task to cleanly and consistently check DUT output values
   task check_output_count;
-    input logic [(NUM_BIT_CNT - 1):0] expected_count;
+    input logic [(`NUM_BIT_CNT - 1):0] expected_count;
     input string check_tag;
   begin
     if(expected_count == tb_count_out) begin // Check passed
@@ -104,7 +104,7 @@ module tb_counter();
   end
   
   // DUT Port map
-  flex_counter DUT(.clk(tb_clk), .nRST(tb_nRST), .clear(tb_clear), .count_enable(tb_count_enable)
+  socetlib_counter #(.BITS_WIDTH(`NUM_BIT_CNT)) DUT(.clk(tb_clk), .nRST(tb_nRST), .clear(tb_clear), .count_enable(tb_count_enable)
     , .overflow_val(tb_overflow_val), .count_out(tb_count_out), .overflow_flag(tb_overflow_flag));
   
   // Test bench main process

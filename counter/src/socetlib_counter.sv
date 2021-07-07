@@ -2,7 +2,9 @@
 // Author:      Huy-Minh Tran
 // Description: Counter 
 
-module counter
+`timescale 1ns / 10ps
+
+module socetlib_counter
 #(
     parameter BITS_WIDTH = 4
 )
@@ -39,7 +41,7 @@ module counter
         n_of = 0;
 
         if (clear == 1'b1) 
-            n_q = 0; 
+            n_count = 0; 
 
         else if (count_enable) begin
             if (count + 1 > overflow_val)

@@ -1,7 +1,7 @@
 // Author:      Huy-Minh Tran
 // Description: Flex Shift Register
-`timescale 1ns / 10ps
-module shift_reg
+
+module socetlib_shift_reg
 #(
 	parameter NUM_BITS = 4,
 	parameter SHIFT_MSB = 1 //1 is MSB, 0 is LSB

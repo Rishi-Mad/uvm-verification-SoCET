@@ -1,23 +1,22 @@
-// $Id: $
-// File name:   tb_stp_sr_4_msb.sv
-// Created:     9/23/2020
 // Author:      Minh Tran
-// Lab Section: 004
-// Version:     1.0  Initial Design Entry
 // Description: Test bench for the default settings versions of Flex STP SR
+`ifndef SR_SIZE_BITS
+    `define SR_SIZE_BITS 8
+`endif
 
-`timescale 1ns / 10ps
+`ifndef MSB
+    `define MSB 1
+`endif
 
-module tb_shift_reg();
+module tb_socet_shift_reg();
   // Define parameters
   // Common parameters
   localparam CLK_PERIOD        = 2.5;
   localparam PROPAGATION_DELAY = 0.8; // Allow for 800 ps for FF propagation delay
 
   localparam  INACTIVE_VALUE     = 1'b1;
-  localparam  SR_SIZE_BITS       = 4;
-  localparam  SR_MAX_BIT         = SR_SIZE_BITS - 1;
-  localparam  RESET_OUTPUT_VALUE = {SR_SIZE_BITS{1'b1}};
+  localparam  SR_MAX_BIT         = `SR_SIZE_BITS - 1;
+  localparam  RESET_OUTPUT_VALUE = {`SR_SIZE_BITS{1'b1}};
 
   // Declare Test Case Signals
   integer tb_test_num;
@@ -125,7 +124,8 @@ module tb_shift_reg();
   end
 
   // DUT Portmap
-  shift_reg DUT (.clk(tb_clk), .nRST(tb_nRST), 
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB)) DUT 
+                    (.clk(tb_clk), .nRST(tb_nRST), 
                     .serial_in(tb_serial_in), 
                     .shift_enable(tb_shift_enable), 
                     .parallel_out(tb_parallel_out));
@@ -181,7 +181,7 @@ module tb_shift_reg();
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = '{`SR_SIZE_BITS{1'b0}};
 
     // Define the expected result
     tb_expected_ouput = '0;
@@ -199,7 +199,7 @@ module tb_shift_reg();
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = '{`SR_SIZE_BITS{1'b0}};
 
     // Bootstrap the expected output signal
     tb_expected_ouput = RESET_OUTPUT_VALUE;
@@ -229,7 +229,7 @@ module tb_shift_reg();
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b1}};
+    tb_test_data = '{`SR_SIZE_BITS{1'b1}};
 
     // Define the expected result
     tb_expected_ouput = '1;
