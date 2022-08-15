@@ -1,0 +1,45 @@
+CAPI=2:
+name: socet:digital-lib:shift_register:0.0.1
+description: Parameterizable shift register 
+
+filesets:
+    rtl:
+        files:
+            - src/socetlib_shift_register.sv
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - tb/tb_socetlib_shift_register.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: socetlib_shift_register
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_shift_register
+
+    gui:
+        <<: *default
+        description: Simulate TB with GUI
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_shift_register
+        tools:
+            xcelium:
+                xrun_options:
+                    - -gui
+                    - -access +rwc
+    lint:
+        <<: *default
+        description: Linting
+        default_tool: veriblelint

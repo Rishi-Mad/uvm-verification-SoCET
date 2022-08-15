@@ -1,0 +1,88 @@
+CAPI=2:
+name: socet:digital-lib:synchronizer:0.0.1
+description: Synchronizer with parameterizable high/low and stage count
+
+filesets:
+    rtl:
+        files:
+            - src/socetlib_synchronizer.sv
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - tb/tb_socetlib_synchronizer.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - tb/tb_socetlib_synchronizer.cc : {file_type : cppSource}
+        file_type: verilogSource
+
+    fpga:
+        files:
+            - fpga/fpga_socetlib_synchronizer.sv
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: socetlib_synchronizer
+        # No parameters?
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_synchronizer
+        tools:
+            vcs:
+                vcs_options:
+                    - -assert svaext
+                    - -debug_access+pp
+                    - -debug_access+all
+                    - -debug_pp +vcd+vcdpluson
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+
+    verilate:
+        filesets: [rtl, verilator_tb]
+        description: Simulate with Verilator
+        default_tool: verilator
+        toplevel: socetlib_synchronizer
+        tools:
+            verilator:
+                mode: cc
+                verilator_options: ["--trace", "--trace-structs", "--report-unoptflat", "--coverage-line", "--coverage-toggle"]
+
+    gui:
+        <<: *default
+        description: Simulate TB with GUI
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_synchronizer
+        tools:
+            xcelium:
+                xrun_options:
+                    - -gui
+                    - -access +rwc
+    fpga:
+        <<: *default
+        filesets_append:
+            - fpga
+        description: FPGA Synthesis
+        default_tool: quartus
+        tools:
+            quartus:
+                family: Cyclone V
+                device: 5CSEMA5F31C6
+
+    lint:
+        <<: *default
+        description: Linting
+        default_tool: veriblelint

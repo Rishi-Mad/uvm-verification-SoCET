@@ -9,29 +9,31 @@ module socetlib_synchronizer#(
     output logic sync_out
 );
 
+    /*
     generate
         if(STAGES < 2) begin
-            $error("socetlib_synchronizer: STAGES must be at least 2!");
+            $fatal("socetlib_synchronizer: STAGES must be at least 2!");
         end else if(STAGES > 3) begin
-            $error("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer??? (If so, come edit this module to confirm)");
+            $fatal("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer??? (If so, come edit this module to confirm)");
         end
 
         if(RESET_STATE != "HIGH" && RESET_STATE != "LOW") begin
-            $error("socetlib_synchronizer: RESET_STATE must be either 'HIGH' or 'LOW'");
+            $fatal("socetlib_synchronizer: RESET_STATE must be either 'HIGH' or 'LOW'");
         end
     endgenerate
+    */
 
     logic [STAGES-1:0] stages;
     logic [STAGES-1:0] reset_val;
 
 
-    generate
+    generate 
         if(RESET_STATE == "HIGH") begin
             assign reset_val = '1;
         end else if(RESET_STATE == "LOW") begin
             assign reset_val = '0;
         end
-    endgenerate
+    endgenerate 
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin

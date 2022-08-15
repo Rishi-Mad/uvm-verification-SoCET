@@ -5,8 +5,8 @@
         parameter ADDR_WIDTH = 32,
         parameter DATA_WIDTH = 32
     )(
-        logic PCLK,
-        logic PRESETn
+        input logic PCLK,
+        input logic PRESETn
     );
         
         logic [ADDR_WIDTH-1:0] PADDR;

@@ -29,6 +29,7 @@ module tb_socetlib_synchronizer();
 
 
     initial begin
+
         $display("Running synchronizer with %d stages and %s reset value", `TB_STAGES, `TB_SENSE);
         async_in = (`TB_SENSE == "LOW") ? 1'b0 : 1'b1;
         nRST = 1'b1;
