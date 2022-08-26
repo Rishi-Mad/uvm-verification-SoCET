@@ -1,7 +1,7 @@
 
 module socetlib_synchronizer#(
-    parameter RESET_STATE = "HIGH",
-    parameter STAGES = 2
+    parameter bit RESET_STATE = 1'b1,
+    parameter int STAGES = 2
 )(
     input CLK,
     input nRST,
@@ -9,31 +9,28 @@ module socetlib_synchronizer#(
     output logic sync_out
 );
 
-    /*
-    generate
-        if(STAGES < 2) begin
-            $fatal("socetlib_synchronizer: STAGES must be at least 2!");
-        end else if(STAGES > 3) begin
-            $fatal("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer??? (If so, come edit this module to confirm)");
-        end
+    // Test parameters
+    
 
-        if(RESET_STATE != "HIGH" && RESET_STATE != "LOW") begin
-            $fatal("socetlib_synchronizer: RESET_STATE must be either 'HIGH' or 'LOW'");
-        end
-    endgenerate
-    */
+    if(STAGES < 2) begin
+        $error("socetlib_synchronizer: STAGES must be at least 2!");
+    end else if(STAGES > 3) begin
+        $error("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer???");
+    end
 
     logic [STAGES-1:0] stages;
     logic [STAGES-1:0] reset_val;
 
+    assign reset_val = {STAGES{RESET_STATE}};
 
-    generate 
-        if(RESET_STATE == "HIGH") begin
+    /*
+    generate
+        if(RESET_STATE == "HIGH") begin : gen_reset_state_high
             assign reset_val = '1;
-        end else if(RESET_STATE == "LOW") begin
+        end else if(RESET_STATE == "LOW") begin : gen_reset_state_low
             assign reset_val = '0;
         end
-    endgenerate 
+    endgenerate*/
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin

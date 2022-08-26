@@ -21,6 +21,7 @@ filesets:
     fpga:
         files:
             - fpga/fpga_socetlib_synchronizer.sv
+        file_type: systemVerilogSource
 
 targets:
     default: &default
@@ -75,14 +76,18 @@ targets:
         <<: *default
         filesets_append:
             - fpga
-        description: FPGA Synthesis
+        description: FPGA Wrapper
         default_tool: quartus
+        toplevel: fpga_socetlib_synchronizer
         tools:
             quartus:
-                family: Cyclone V
-                device: 5CSEMA5F31C6
+                family: Cyclone 10 GX
+                device: 10CX220YF672E5G
 
     lint:
         <<: *default
+        filesets_append:
+            - fpga
+            - tb
         description: Linting
         default_tool: veriblelint
