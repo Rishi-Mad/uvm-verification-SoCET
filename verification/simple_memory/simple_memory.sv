@@ -5,7 +5,7 @@
 *
 */
 
-module register_sim #(
+module simple_memory #(
     parameter NREGS = 32,
     parameter WIDTH = 32
 )(

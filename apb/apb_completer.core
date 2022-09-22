@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:apb_completer:0.0.1
+name: socet:digital-lib:apb_completer:0.0.2
 description: Parameterizable APB Completer (AMBA 5)
 
 filesets:
@@ -13,9 +13,10 @@ filesets:
 
 
     tb:
+        depend:
+            - "socet:digital-lib:simple_memory"
         files:
             - tb/tb_socetlib_apb_completer.sv
-            - tb/register_sim.sv
         file_type: systemVerilogSource
 
 targets:

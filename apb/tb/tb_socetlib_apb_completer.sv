@@ -29,7 +29,7 @@ module tb_socetlib_apb_completer();
         .protif
     );
 
-    register_sim R(
+    simple_memory M(
         .CLK(PCLK),
         .nRST(PRESETn),
         .prif(protif),
