@@ -1,23 +1,30 @@
-`include "apb_if.vh"
-`include "bus_protocol_if.vh"
 
 module apb_completer #(
-    parameter ADDR_WIDTH = 32,
-    parameter DATA_WIDTH = 32,
-    parameter BASE_ADDR = 'h8000_0000,
-    parameter NWORDS = 4, // # of words of address space to cover (address space)
-    parameter apb_pkg::APBAccessControl [NWORDS-1:0] PERMISSIONS = '0
+    parameter int ADDR_WIDTH = 32,
+    parameter int DATA_WIDTH = 32,
+    parameter logic [ADDR_WIDTH-1:0] BASE_ADDR = 'h8000_0000,
+    parameter int NWORDS = 4 // # of words of address space to cover (address space)
 )(
     apb_if.completer apbif,
     bus_protocol_if.protocol protif
 );
-    import apb_pkg::*;
+
+`ifndef SYNTHESIS
+    if(NWORDS <= 0) begin
+        $error("%s (%s): APB Completer MUST have at least 1 word of address space!\n", `__FILE__, `__LINE__);
+    end
+`endif
 
     localparam WORD_LENGTH = ADDR_WIDTH / 8;
     localparam TOP_ADDR = BASE_ADDR + NWORDS*WORD_LENGTH;
+    
+    typedef enum logic [1:0] {
+        IDLE,
+        ACCESS,
+        ERROR
+    } APBState;
 
     APBState state, state_next;
-    APBAccessControl request_permissions;
 
     logic [ADDR_WIDTH-1:0] offset_next;
     logic WEN_next, REN_next;
@@ -87,16 +94,13 @@ module apb_completer #(
     * Address Decode + Address request_error checks
     */
     assign decoded_addr = apbif.PADDR - BASE_ADDR;
-    assign request_permissions = APBAccessControl'({~apbif.PWRITE, apbif.PWRITE});
 
     logic range_error;
     logic alignerror;
-    logic permission_error;
     
     assign range_error = (apbif.PADDR < BASE_ADDR || apbif.PADDR >= TOP_ADDR);
     assign align_error = ((apbif.PADDR & WORD_LENGTH-1) != 'b0); // WORD_LENGTH - 1 is a mask for the required-zero bits if access is aligned
-    assign permission_error = ((PERMISSIONS[offset_next] & request_permissions) == 2'b00);
-    assign request_error = apbif.PSEL && (range_error || align_error || permission_error);
+    assign request_error = apbif.PSEL && (range_error || align_error);
     
     /*
     * Latched signals

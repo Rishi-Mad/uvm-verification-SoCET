@@ -1,9 +1,5 @@
-`include "apb_if.vh"
-`include "bus_protocol_if.vh"
 
-module tb_apb_completer();
-
-    import apb_pkg::*;
+module tb_socetlib_apb_completer();
 
     localparam ADW = 32; // Address width
     localparam DAW = 32; // Data width
@@ -19,15 +15,15 @@ module tb_apb_completer();
     logic [31:0] offset, wdata, rdata;
     logic [3:0] write_strobe;
     int latency;
+    int test_number = 0;
+    int fails = 0;
 
-    localparam APBAccessControl [31:0] permissions = {{8{APB_RO}}, {24{APB_RW}}};
 
     apb_completer #(
         .NWORDS(32),
         .BASE_ADDR(32'h0000_0000),
         .ADDR_WIDTH(ADW),
-        .DATA_WIDTH(DAW),
-        .PERMISSIONS(permissions)
+        .DATA_WIDTH(DAW)
     ) DUT (
         .apbif,
         .protif
@@ -146,12 +142,13 @@ module tb_apb_completer();
         for(int i = 0; i < 24; i++) begin
             apb_write(32'h0, i*4, 1'b0, '1, 1'b1);
             apb_read(32'h0, i*4, 1'b0, 1'b1);
+            test_number++;
         end
 
         /*
         * Block 2: Test errors
         */
-
+        $display("Passed %0d / %0d tests!\n", test_number - fails, test_number);
         $finish();
     end
 

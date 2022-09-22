@@ -4,7 +4,6 @@
 *   Model of a 'memory' with configurable latency
 *
 */
-`include "bus_protocol_if.vh"
 
 module register_sim #(
     parameter NREGS = 32,
