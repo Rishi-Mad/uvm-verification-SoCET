@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:apb_completer:0.0.2
+name: socet:digital-lib:apb_completer:0.0.3
 description: Parameterizable APB Completer (AMBA 5)
 
 filesets:

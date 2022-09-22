@@ -26,6 +26,7 @@ module apb_completer #(
 
     APBState state, state_next;
 
+    logic [ADDR_WIDTH-1:0] decoded_addr;
     logic [ADDR_WIDTH-1:0] offset_next;
     logic WEN_next, REN_next;
     logic [3:0] write_strobe_next;

@@ -60,10 +60,6 @@ module tb_socetlib_apb_completer();
             @(posedge apbif.PCLK);
             #(1);
         end
-        @(posedge apbif.PCLK);
-        #(1);
-        apbif.PENABLE = 1'b0;
-        apbif.PSEL = 1'b0;
     endtask
 
     task apb_read(
@@ -93,6 +89,10 @@ module tb_socetlib_apb_completer();
             assert(apbif.PSLVERR)
             else $display("Time %t: Expected an error, didn't get it.\n", $time);
         end
+
+        apbif.PENABLE = 1'b0;
+        apbif.PSEL = 1'b0;
+        @(posedge apbif.PCLK);
     endtask
 
     task apb_write(
@@ -120,6 +120,10 @@ module tb_socetlib_apb_completer();
             assert(apbif.PSLVERR)
             else $display("Time %t: Expected an error, didn't get it.\n", $time);
         end
+        
+        apbif.PENABLE = 1'b0;
+        apbif.PSEL = 1'b0;
+        @(posedge apbif.PCLK);
     endtask
 
 
@@ -140,8 +144,12 @@ module tb_socetlib_apb_completer();
         * Block 1: No wait states, test write-then-read
         */
         for(int i = 0; i < 24; i++) begin
-            apb_write(32'h0, i*4, 1'b0, '1, 1'b1);
-            apb_read(32'h0, i*4, 1'b0, 1'b1);
+            apb_write(i*4, i*4, 1'b0, '1, 1'b1);
+            test_number++;
+        end
+        
+        for(int i = 0; i < 24; i++) begin
+            apb_read(i*4, i*4, 1'b0, 1'b1);
             test_number++;
         end
 

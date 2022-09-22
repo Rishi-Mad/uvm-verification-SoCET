@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:simple_memory:0.0.1
+name: socet:digital-lib:simple_memory:0.0.2
 description: Simple memory using bus_protocol_if for testing bus managers
 
 filesets:

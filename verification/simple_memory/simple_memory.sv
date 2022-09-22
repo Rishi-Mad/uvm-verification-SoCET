@@ -22,6 +22,9 @@ module simple_memory #(
     int lat_cnt, lat_cnt_next;
     logic ready;
     
+    logic [31:0] addr_internal;
+
+    assign addr_internal = prif.addr >> 2;
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin
@@ -44,15 +47,15 @@ module simple_memory #(
         end
 
         if(prif.wen && ready) begin
-            regs_next[prif.addr][0+:8] = prif.strobe[0] ? prif.wdata[0+:8] : regs_next[prif.addr][0+:8];
-            regs_next[prif.addr][8+:8] = prif.strobe[1] ? prif.wdata[8+:8] : regs_next[prif.addr][8+:8];
-            regs_next[prif.addr][16+:8] = prif.strobe[2] ? prif.wdata[16+:8] : regs_next[prif.addr][16+:8];
-            regs_next[prif.addr][24+:8] = prif.strobe[3] ? prif.wdata[24+:8] : regs_next[prif.addr][24+:8];
+            regs_next[addr_internal][0+:8] = prif.strobe[0] ? prif.wdata[0+:8] : regs_next[addr_internal][0+:8];
+            regs_next[addr_internal][8+:8] = prif.strobe[1] ? prif.wdata[8+:8] : regs_next[addr_internal][8+:8];
+            regs_next[addr_internal][16+:8] = prif.strobe[2] ? prif.wdata[16+:8] : regs_next[addr_internal][16+:8];
+            regs_next[addr_internal][24+:8] = prif.strobe[3] ? prif.wdata[24+:8] : regs_next[addr_internal][24+:8];
         end
     end
 
     assign ready = (lat_cnt == latency);
-    assign prif.rdata = regs[prif.addr];
+    assign prif.rdata = regs[addr_internal];
     assign prif.request_stall = !ready;
 
     assign prif.error = 0;
