@@ -15,5 +15,11 @@ module tb_counter ();
         forever #10 clk = ~clk;
     end
 
-    counter_if counterif(clk);    
+    counter_if counterif(clk);   
+
+
+inital begin 
+	run_test("test")
+end 
+
 endmodule
