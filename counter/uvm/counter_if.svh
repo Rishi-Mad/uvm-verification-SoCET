@@ -1,3 +1,6 @@
+`ifndef COUNTER_IF_SVH
+`define COUNTER_IF_SVH
+
 interface counter_if #(parameter BITS_WIDTH) (input logic clk);
     logic nRST;
     logic clear;
@@ -15,3 +18,6 @@ modport counter ( // DUT
     output overflow_flag, count_out,
     input overflow_val, count_enable, clear, nRST
 );
+
+endinterface
+`endif

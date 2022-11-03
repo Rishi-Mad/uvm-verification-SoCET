@@ -5,7 +5,7 @@ import uvm_pkg::*;
 `include "monitor.svh"
 
 class agent extends uvm_agent;
-    `uvm_components_util(agent)
+    `uvm_component_utils(agent)
 
     sequencer sqr;
     driver drv;
@@ -16,7 +16,7 @@ class agent extends uvm_agent;
     endfunction
 
     virtual function void build_phase(uvm_phase phase);
-        sqr = sequence::type_id::create("sqr", this);
+        sqr = sequencer::type_id::create("sqr", this);
         drv = driver::type_id::create("drv", this);
         mon = monitor::type_id::create("mon", this);
     endfunction

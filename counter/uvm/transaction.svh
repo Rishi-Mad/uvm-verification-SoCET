@@ -1,3 +1,6 @@
+`ifndef TRANSACTION_SVH
+`define TRANSACTION_SVH
+
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 
@@ -32,3 +35,5 @@ class transaction #(parameter BITS_WIDTH = 4) extends uvm_sequence_item;
     endfunction
 
 endclass
+
+`endif

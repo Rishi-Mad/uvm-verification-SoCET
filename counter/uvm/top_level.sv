@@ -4,7 +4,7 @@
 
 `timescale 1ns/1ps
 
-import uvm_pkg::*,
+import uvm_pkg::*;
 
 module tb_counter ();
     logic clk;

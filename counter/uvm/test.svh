@@ -13,7 +13,7 @@ function new(string name = "test", uvm_component parent);
     super.new(name, parent);
 endfunction: new
 
-function_void build_phase(uvm_phase phase);
+function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     env = environment::type_id::create("env", this);
     seq = counter_sequence::type_id::create("seq");
