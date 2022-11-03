@@ -1,28 +1,17 @@
-`ifndef COUNTER_IF_SVH
-`define COUNTER_IF_SVH
-
-interface counter_if #(parameter NBITS = 4) (input logic CLK);
-
-    logic clear;
+interface counter_if #(parameter BITS_WIDTH) (input logic clk);
     logic nRST;
+    logic clear;
     logic count_enable;
-    logic [NBITS - 1 : 0] overflow_val;
-    logic [NBITS - 1 : 0] count_out;
-    logic [NBITS - 1 : 0] overflow_flag; // Shouldn't this just be logic?
-    logic check; // check result if high
-    int enable_time; // clock cycles to run count_enable
+    logic [BITS_WIDTH - 1 : 0] overflow_val;
+    logic [BITS_WIDTH - 1 : 0] count_out;
+    logic overflow_flag;
 
-    modport tester
-    (
-        input count_out, overflow_flag, CLK;
-        output nRST, clear, count_enable, overflow_val, check, enable_time
-    );
+modport test ( // test
+    input overflow_flag,count_out,
+    output nRST, clear, count_enable, overflow_val
+);
 
-    modport counter
-    (
-        output count_out, overflow_flag,
-        input nRST, clear, count_enable, overflow_flag, CLK
-    );
-endinterface
-
-`endif
+modport counter ( // DUT
+    output overflow_flag, count_out,
+    input overflow_val, count_enable, clear, nRST
+);
