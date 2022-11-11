@@ -2,11 +2,11 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 `include "fifo_transaction.svh"
 
-class predictor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_subscriber#(transaction);
-    `uvm_component_utils(predictor)
+class predictor #(type T = logic [7:0], int DEPTH = 8) extends uvm_subscriber#(transaction#(T, DEPTH));
+    `uvm_component_utils(predictor#(T, DEPTH))
 
-    uvm_analysis_port#(transaction) pred_ap;
-    transaction pred_tx;
+    uvm_analysis_port#(transaction#(T, DEPTH)) pred_ap;
+    transaction#(T, DEPTH) pred_tx;
     T pred_fifo [$:DEPTH - 1];  // model fifo with DEPTH size
     int size;
     bit curr_underrun, curr_overrun, prev_underrun, prev_overrun = 0;
@@ -20,7 +20,7 @@ class predictor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_subscri
         pred_ap = new("pred_ap", this);
     endfunction
 
-    function void write(transaction t);
+    function void write(transaction#(T, DEPTH) t);
         prev_overrun = curr_overrun;  // overrun persists until clear
         prev_underrun = curr_underrun;  // underrun persists until clear
 

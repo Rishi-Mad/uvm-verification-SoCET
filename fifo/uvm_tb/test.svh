@@ -7,10 +7,10 @@ import uvm_pkg::*;
 
 class test extends uvm_test;
     `uvm_component_utils(test)
-    environment env;
-    virtual fifo_if vif;
-    fifo_seq f_seq;
-    clk_seq c_seq;
+    environment#(int, 32) env;
+    virtual fifo_if#(int, 32) vif;
+    fifo_seq#(int, 32) f_seq;
+    clk_seq#(10) c_seq;
 
     function new(string name = "test", uvm_component parent = null);
         super.new(name, parent);
@@ -18,15 +18,15 @@ class test extends uvm_test;
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        env = environment#()::type_id::create("env", this);
-        f_seq = fifo_seq#()::type_id::create("f_seq", this);
-        c_seq = clk_seq#(5)::type_id::create("c_seq", this);
+        env = environment#(int, 32)::type_id::create("env", this);
+        f_seq = fifo_seq#(int, 32)::type_id::create("f_seq", this);
+        c_seq = clk_seq#(10)::type_id::create("c_seq", this);
 
-        if (!uvm_config_db#(virtual fifo_if)::get(this, "", "fifo_vif", vif)) begin
+        if (!uvm_config_db#(virtual fifo_if#(int, 32))::get(this, "", "fifo_vif", vif)) begin
             `uvm_fatal("Test", "No virtual interface specified for this test instance")
         end
 
-        uvm_config_db#(virtual fifo_if)::set(this, "env.agt*", "fifo_vif", vif);
+        uvm_config_db#(virtual fifo_if#(int, 32))::set(this, "env.agt*", "fifo_vif", vif);
     endfunction
 
     task run_phase(uvm_phase phase);

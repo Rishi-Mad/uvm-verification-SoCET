@@ -3,8 +3,8 @@ import uvm_pkg::*;
 `include "clk_transaction.svh"
 `timescale 1ns/1ns
 
-class clk_seq#(parameter HALF_PERIOD = 10) extends uvm_sequence#(clk_transaction);
-    `uvm_object_utils(clk_seq)
+class clk_seq#(PERIOD = 20) extends uvm_sequence#(clk_transaction);
+    `uvm_object_utils(clk_seq#(PERIOD))
 
     function new(string name = "");
         super.new(name);
@@ -15,11 +15,11 @@ class clk_seq#(parameter HALF_PERIOD = 10) extends uvm_sequence#(clk_transaction
         req_item = clk_transaction::type_id::create("req_item");
     
         repeat(10001) begin
-            #(HALF_PERIOD)
+            #(PERIOD/2)
             start_item(req_item);
             req_item.clk = 1;
             finish_item(req_item);
-            #(HALF_PERIOD)
+            #(PERIOD/2)
             start_item(req_item);
             req_item.clk = 0;
             finish_item(req_item);

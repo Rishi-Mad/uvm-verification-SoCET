@@ -4,7 +4,7 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 
-class transaction #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_sequence_item;
+class transaction #(type T = logic [7:0], int DEPTH = 8) extends uvm_sequence_item;
     rand T wdata;
     rand bit WEN;
     rand bit REN;
@@ -18,7 +18,7 @@ class transaction #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_seque
     bit [$clog2(DEPTH) - 1:0] count;
     T rdata;
 
-    `uvm_object_utils_begin(transaction)
+    `uvm_object_utils_begin(transaction#(T, DEPTH))
         `uvm_field_int(wdata, UVM_NOCOMPARE)
         `uvm_field_int(WEN, UVM_NOCOMPARE)
         `uvm_field_int(REN, UVM_NOCOMPARE)

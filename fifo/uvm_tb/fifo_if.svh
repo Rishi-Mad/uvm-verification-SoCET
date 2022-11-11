@@ -1,7 +1,7 @@
 `ifndef FIFO_IF_SVH
 `define FIFO_IF_SVH
 
-interface fifo_if #(type T = logic [7:0], parameter DEPTH = 8); //(input logic clk);
+interface fifo_if #(type T = logic [7:0], parameter DEPTH = 8);
     // inputs
     logic clk;
     logic nRST;

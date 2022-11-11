@@ -1,12 +1,12 @@
 TOP = tb_uvm_fifo.sv
-TB = tb/
+TB = uvm_tb/
 RTL = src/socetlib_fifo.sv
 
 build:
-	vlog +incdir+src+tb \
+	vlog +incdir+src+uvm_tb+uvm_tb/clk_agent \
 	+acc \
 	+cover \
-	-L $$QUESTA_HOME/uvm-1.2 $(FIFO) tb/$(TOP) \
+	-L $$QUESTA_HOME/uvm-1.2 $(FIFO) uvm_tb/$(TOP) \
 	-logfile tb_compile.log \
 	-printinfilenames=file_search.log
 

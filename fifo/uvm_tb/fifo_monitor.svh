@@ -2,13 +2,13 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 `include "fifo_if.svh"
 
-class fifo_monitor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_monitor;
-    `uvm_component_utils(fifo_monitor)
+class fifo_monitor #(type T = logic [7:0], int DEPTH = 8) extends uvm_monitor;
+    `uvm_component_utils(fifo_monitor#(T, DEPTH))
 
-    virtual fifo_if vif;
+    virtual fifo_if#(T, DEPTH) vif;
 
-    uvm_analysis_port#(transaction) fifo_ap;
-    uvm_analysis_port#(transaction) result_ap;
+    uvm_analysis_port#(transaction#(T, DEPTH)) fifo_ap;
+    uvm_analysis_port#(transaction#(T, DEPTH)) result_ap;
 
     function new(string name, uvm_component parent = null);
         super.new(name, parent);
@@ -17,12 +17,12 @@ class fifo_monitor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_moni
     endfunction //new()
 
     virtual function void build_phase(uvm_phase phase);
-        if (!uvm_config_db#(virtual fifo_if)::get(this, "", "fifo_vif", vif)) begin
+        if (!uvm_config_db#(virtual fifo_if#(T, DEPTH))::get(this, "", "fifo_vif", vif)) begin
             `uvm_fatal("FIFO_Monitor", "No virtual interface specified for this monitor instance")
         end
     endfunction
 
-    virtual task  run_phase(uvm_phase phase);
+    virtual task run_phase(uvm_phase phase);
         super.run_phase(phase);
         // wait for DUT reset
         @(posedge vif.clk)
@@ -32,7 +32,7 @@ class fifo_monitor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_moni
             begin  // input read / predictor thread
                 forever begin
                     // read inputs and send to fifo_ap (to predictor)
-                    transaction tx;
+                    transaction#(T, DEPTH) tx;
                     @(posedge vif.clk)
                     tx = transaction#(T, DEPTH)::type_id::create("tx");
                     tx.nRST = vif.nRST;
@@ -48,7 +48,7 @@ class fifo_monitor #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_moni
                 @(posedge vif.clk)  // - until output is affected by input
                 forever begin
                     // read outputs and send to result_ap (to scoreboard)
-                    transaction tx;
+                    transaction#(T, DEPTH) tx;
                     @(posedge vif.clk)
                     tx = transaction#(T, DEPTH)::type_id::create("tx");
                     tx.full = vif.full;

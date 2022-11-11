@@ -11,11 +11,11 @@ import uvm_pkg::*;
 `include "clk_agent.svh"
 `include "clk_transaction.svh"
 
-class environment #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_env;
-    `uvm_component_utils(environment)
-    fifo_agent fifo_agt;
-    predictor pred;
-    scoreboard scrb;
+class environment #(type T = logic [7:0], int DEPTH = 8) extends uvm_env;
+    `uvm_component_utils(environment#(T, DEPTH))
+    fifo_agent#(T, DEPTH) fifo_agt;
+    predictor#(T, DEPTH) pred;
+    scoreboard#(T, DEPTH) scrb;
     clk_agent clk_agt;
     
     function new(string name = "env", uvm_component parent = null);
@@ -25,7 +25,7 @@ class environment #(type T = logic [7:0], parameter DEPTH = 8) extends uvm_env;
     function void build_phase(uvm_phase phase);
         fifo_agt = fifo_agent#(T, DEPTH)::type_id::create("fifo_agt", this);
         pred = predictor#(T, DEPTH)::type_id::create("pred", this);
-        scrb = scoreboard::type_id::create("scrb", this);
+        scrb = scoreboard#(T, DEPTH)::type_id::create("scrb", this);
         clk_agt = clk_agent::type_id::create("clk_agt", this);
     endfunction
 

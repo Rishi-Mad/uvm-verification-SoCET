@@ -1,12 +1,12 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 
-class scoreboard extends uvm_scoreboard;
-    `uvm_component_utils(scoreboard)
-    uvm_analysis_export#(transaction) expected_export;
-    uvm_analysis_export#(transaction) actual_export;
-    uvm_tlm_analysis_fifo#(transaction) expected_fifo;
-    uvm_tlm_analysis_fifo#(transaction) actual_fifo;
+class scoreboard#(type T = logic [7:0], int DEPTH = 8) extends uvm_scoreboard;
+    `uvm_component_utils(scoreboard#(T, DEPTH))
+    uvm_analysis_export#(transaction#(T, DEPTH)) expected_export;
+    uvm_analysis_export#(transaction#(T, DEPTH)) actual_export;
+    uvm_tlm_analysis_fifo#(transaction#(T, DEPTH)) expected_fifo;
+    uvm_tlm_analysis_fifo#(transaction#(T, DEPTH)) actual_fifo;
 
     int num_matches, num_mismatches;
 
@@ -29,8 +29,8 @@ class scoreboard extends uvm_scoreboard;
     endfunction
 
     task run_phase(uvm_phase phase);
-        transaction ex_tx;  // expected transaction
-        transaction act_tx;  // actual transaction
+        transaction#(T, DEPTH) ex_tx;  // expected transaction
+        transaction#(T, DEPTH) act_tx;  // actual transaction
         forever begin
             expected_fifo.get(ex_tx);
             actual_fifo.get(act_tx);
