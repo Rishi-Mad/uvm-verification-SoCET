@@ -15,7 +15,61 @@ run:
 	$$QUESTA_HOME/uvm-1.2 \
 	-voptargs=+acc \
 	-coverage \
-	+UVM_TESTNAME="test" \
+	+UVM_TESTNAME="base_int_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-period_10ns_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="period_10ns_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-period_20ns_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="period_20ns_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-read_write_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="read_write_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-clear_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="clear_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-nrst_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="nrst_test" \
+	+UVM_VERBOSITY=UVM_LOW \
+	-do "do wave.do" -do "run -all" &
+
+run-full_random_test:
+	vsim -c tb_uvm_fifo -L \
+	$$QUESTA_HOME/uvm-1.2 \
+	-voptargs=+acc \
+	-coverage \
+	+UVM_TESTNAME="full_random_test" \
 	+UVM_VERBOSITY=UVM_LOW \
 	-do "do wave.do" -do "run -all" &
 
@@ -24,7 +78,7 @@ run_gui:
 	$$QUESTA_HOME/uvm-1.2 \
 	-voptargs=+acc \
 	-coverage \
-	+UVM_TESTNAME="test" \
+	+UVM_TESTNAME="base_int_test" \
 	+UVM_VERBOSITY=UVM_LOW \
 	-do "do wave.do" -do "run -all" &
 

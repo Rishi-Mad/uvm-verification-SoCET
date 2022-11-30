@@ -6,7 +6,7 @@ import uvm_pkg::*;
 
 class clk_transaction extends uvm_sequence_item;
     bit clk;
-    bit nRST = 1;
+    rand bit nRST = 1;
 
     `uvm_object_utils_begin(clk_transaction)
         `uvm_field_int(clk, UVM_NOCOMPARE)
@@ -15,7 +15,7 @@ class clk_transaction extends uvm_sequence_item;
 
     // randomization constraints
     constraint clk_tx_constr {
-        nRST dist{ 0 := 0, 1 := 1};
+        nRST dist{ 0 := 1, 1 := 999};
     }
 
     function new(string name = "clk_transaction");

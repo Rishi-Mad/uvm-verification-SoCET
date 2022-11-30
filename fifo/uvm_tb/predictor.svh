@@ -21,8 +21,8 @@ class predictor #(type T = logic [7:0], int DEPTH = 8) extends uvm_subscriber#(t
     endfunction
 
     function void write(transaction#(T, DEPTH) t);
-        prev_overrun = curr_overrun;  // overrun persists until clear
-        prev_underrun = curr_underrun;  // underrun persists until clear
+        prev_overrun = curr_overrun;  // overrun persists until clear or !nRST
+        prev_underrun = curr_underrun;  // underrun persists until clear or !nRST
 
         pred_tx = transaction#(T, DEPTH)::type_id::create("pred_tx", this);
         pred_tx.copy(t);

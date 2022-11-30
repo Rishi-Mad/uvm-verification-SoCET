@@ -16,7 +16,7 @@ class environment #(type T = logic [7:0], int DEPTH = 8) extends uvm_env;
     fifo_agent#(T, DEPTH) fifo_agt;
     predictor#(T, DEPTH) pred;
     scoreboard#(T, DEPTH) scrb;
-    clk_agent clk_agt;
+    clk_agent#(T, DEPTH) clk_agt;
     
     function new(string name = "env", uvm_component parent = null);
         super.new(name, parent);
@@ -26,7 +26,7 @@ class environment #(type T = logic [7:0], int DEPTH = 8) extends uvm_env;
         fifo_agt = fifo_agent#(T, DEPTH)::type_id::create("fifo_agt", this);
         pred = predictor#(T, DEPTH)::type_id::create("pred", this);
         scrb = scoreboard#(T, DEPTH)::type_id::create("scrb", this);
-        clk_agt = clk_agent::type_id::create("clk_agt", this);
+        clk_agt = clk_agent#(T, DEPTH)::type_id::create("clk_agt", this);
     endfunction
 
     function void connect_phase(uvm_phase phase);

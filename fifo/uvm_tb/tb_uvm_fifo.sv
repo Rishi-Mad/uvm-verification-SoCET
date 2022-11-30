@@ -9,6 +9,6 @@ module tb_uvm_fifo();
 
     initial begin
         uvm_config_db#(virtual fifo_if#(int, 32))::set(null, "", "fifo_vif", f_if);
-        run_test("test");
+        run_test();
     end
 endmodule

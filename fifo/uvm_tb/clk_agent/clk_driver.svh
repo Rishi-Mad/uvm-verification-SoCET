@@ -2,19 +2,19 @@ import uvm_pkg::*;
 `include "uvm_macros.svh"
 `include "fifo_if.svh"
 
-class clk_driver extends uvm_driver#(clk_transaction);
-    `uvm_component_utils(clk_driver)
+class clk_driver#(type T = logic [7:0], int DEPTH = 8) extends uvm_driver#(clk_transaction);
+    `uvm_component_utils(clk_driver#(T, DEPTH))
 
-    virtual fifo_if#(int, 32) vif;
+    virtual fifo_if#(T, DEPTH) vif;
 
-    function new(string name, uvm_component parent);
+    function new(string name = "", uvm_component parent = null);
         super.new(name, parent);
     endfunction //new()
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
 
-        if (!uvm_config_db#(virtual fifo_if#(int, 32))::get(this, "", "fifo_vif", vif)) begin
+        if (!uvm_config_db#(virtual fifo_if#(T, DEPTH))::get(this, "", "fifo_vif", vif)) begin
             `uvm_fatal("CLK_Driver", "No virtual interface specified for this test instance");
         end
     endfunction
