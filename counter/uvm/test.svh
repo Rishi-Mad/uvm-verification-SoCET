@@ -18,7 +18,7 @@ function void build_phase(uvm_phase phase);
     env = environment::type_id::create("env", this);
     seq = counter_sequence::type_id::create("seq");
 
-    if (!uvm_config_db#(virtual counter_if)::get(this, "", "vif", vif)) begin
+    if (!uvm_config_db#(virtual counter_if)::get(this, "", "counter_vif", vif)) begin
         // check for correct interface in database
         `uvm_fatal("TEST", "No virtual interface specified for this test instance")
     end

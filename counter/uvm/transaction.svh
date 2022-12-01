@@ -7,14 +7,14 @@ import uvm_pkg::*;
 class transaction #(parameter BITS_WIDTH = 4) extends uvm_sequence_item;
     rand bit [BITS_WIDTH - 1 : 0] overflow_val;
     rand int num_clk;
-    bit [BITS_WIDTH - 1 : 0] result_count_out;
-    bit result_flag;
+    bit [BITS_WIDTH - 1 : 0] count_out;
+    bit overflow_flag;
 
     `uvm_object_utils_begin(transaction)
         `uvm_field_int(overflow_val, UVM_NOCOMPARE)
         `uvm_field_int(num_clk, UVM_NOCOMPARE)
-        `uvm_field_int(result_count_out, UVM_DEFAULT)
-        `uvm_field_int(result_flag, UVM_DEFAULT)
+        `uvm_field_int(count_out, UVM_DEFAULT)
+        `uvm_field_int(overflow_flag, UVM_DEFAULT)
     `uvm_object_utils_end
 
     constraint overflow{overflow_val != 0; overflow_val != 1;}

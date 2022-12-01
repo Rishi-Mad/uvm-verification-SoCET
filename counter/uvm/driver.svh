@@ -19,34 +19,33 @@ class driver extends uvm_driver#(transaction);
 
     task run_phase(uvm_phase phase);
         transaction req_item;
+        DUT_reset();
 
         forever begin
             seq_item_port.get_next_item(req_item);
-            DUT_reset();
             vif.overflow_val = req_item.overflow_val;
-            vif.enable_time = req_item.num_clk;
+            //vif.enable_time = req_item.num_clk;
             vif.count_enable = 1;
             repeat(req_item.num_clk) begin
                 @(posedge vif.clk);
             end
             vif.count_enable = 0;
-            #(0.2)
-            vif.check = 1;
+            //#(0.2)
+            //vif.check = 1;
             @(posedge vif.clk);
             seq_item_port.item_done();
         end
     endtask: run_phase
 
     task DUT_reset();
-        vif.check = 0;
+        //vif.check = 0;
         @(posedge vif.clk);
         vif.nRST = 1;
         vif.clear = 0;
         vif.count_enable = 0;
         @(posedge vif.clk);
         vif.nRST = 0;
-        @(posedge vif.clk);
-        vif.nRST = 1;
+        vif.clear = 1;
         @(posedge vif.clk);
     endtask
 endclass

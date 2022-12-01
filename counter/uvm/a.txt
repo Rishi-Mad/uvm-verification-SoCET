@@ -1,0 +1,1 @@
+vsim +UVM_TESTNAME=test2

@@ -9,13 +9,13 @@ module socetlib_counter
     parameter BITS_WIDTH = 4
 )
 (
-    input wire clk,
-    input wire nRST,
-    input wire clear,
-    input wire count_enable,
-    input wire [(BITS_WIDTH - 1) : 0] overflow_val,
-    output wire [(BITS_WIDTH - 1) : 0] count_out,
-    output wire overflow_flag
+    input logic clk,
+    input logic nRST,
+    input logic clear,
+    input logic count_enable,
+    input logic [(BITS_WIDTH - 1) : 0] overflow_val,
+    output logic [(BITS_WIDTH - 1) : 0] count_out,
+    output logic overflow_flag
 );
     reg [(BITS_WIDTH - 1) : 0] count;
     reg [(BITS_WIDTH - 1) : 0] n_count;
