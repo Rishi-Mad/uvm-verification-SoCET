@@ -9,6 +9,7 @@ class transaction #(parameter BITS_WIDTH = 4) extends uvm_sequence_item;
     rand int num_clk;
     bit [BITS_WIDTH - 1 : 0] count_out;
     bit overflow_flag;
+    bit enable;
 
     `uvm_object_utils_begin(transaction)
         `uvm_field_int(overflow_val, UVM_NOCOMPARE)
