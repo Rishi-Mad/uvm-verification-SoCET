@@ -37,8 +37,8 @@ class environment #(type T = logic [7:0], int DEPTH = 8) extends uvm_env;
         pred.pred_ap.connect(scrb.expected_export);
         fifo_agt.mon.result_ap.connect(scrb.actual_export);
 
-        fifo_agt.mon.fifo_ap.connect(cov.analysis_export);
-        //fifo_agt.mon.result_ap.connect(scrb.actual_export);
+        fifo_agt.mon.fifo_ap.connect(cov.analysis_imp_inp);
+        fifo_agt.mon.result_ap.connect(cov.analysis_imp_outp);
     endfunction
 endclass: environment //environment extends uvm_env
 
