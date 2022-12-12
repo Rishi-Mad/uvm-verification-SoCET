@@ -13,14 +13,28 @@ class coverage #(type T = logic [7:0], int DEPTH = 8) extends uvm_subscriber#(tr
     transaction#(T,DEPTH) txn;
 
     covergroup fifo_in;
-        wdata_cp: coverpoint txn.wdata;
-        wen_cp: coverpoint txn.WEN;
+        wdata_cp: coverpoint txn.wdata {
+            bins zero = {0};
+            bins posrange[16] = {[1:$]};
+            bins negrange[16] = {[$:-1]};
+        }
+        wen_cp: coverpoint txn.WEN {
+            bins zero = {0};
+            bins one = {1};
+        }
         cross_cp: cross wdata_cp, wen_cp;
     endgroup
 
     covergroup fifo_out;
-        rdata_cp: coverpoint txn.rdata;
-        count_cp: coverpoint txn.count;
+        rdata_cp: coverpoint txn.rdata {
+            bins zero = {0};
+            bins posrange[16] = {[1:$]};
+            bins negrange[16] = {[$:-1]};
+        }
+        count_cp: coverpoint txn.count {
+            bins zero = {0};
+            bins count_range[31] = {[1:$]};
+        }
     endgroup
 
     function new(string name, uvm_component parent = null);
@@ -35,7 +49,7 @@ class coverage #(type T = logic [7:0], int DEPTH = 8) extends uvm_subscriber#(tr
         cov_ap = new("cov_ap", this);
     endfunction
 
-    function void write(transaction#(T, DEPTH) t);
+    function void write(transaction#(T, DEPTH) t);  // overwrites uvm_subscriber write()
         this.txn = t;
     endfunction
 

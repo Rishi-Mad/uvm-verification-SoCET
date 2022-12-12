@@ -71,7 +71,7 @@ run-full_random_test:
 	-coverage \
 	+UVM_TESTNAME="full_random_test" \
 	+UVM_VERBOSITY=UVM_LOW \
-	-do "do wave.do" -do "run -all" &
+	-do "coverage save -onexit coverage.ucdb" -do "run -all" &
 
 run_gui:
 	vsim -i tb_uvm_fifo -L \
