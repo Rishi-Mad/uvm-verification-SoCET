@@ -20,7 +20,7 @@ class transaction #(parameter BITS_WIDTH = 4) extends uvm_sequence_item;
     function new(string name = "transaction");
         super.new(name);
     endfunction: new
-
+    
    function int input_equal(transaction tx);
     int result;
     if ((overflow_val == tx.overflow_val) && (num_clk == tx.num_clk)) begin

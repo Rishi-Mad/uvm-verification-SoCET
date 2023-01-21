@@ -24,7 +24,7 @@ function_void build_phase(uvm_phase phase);
     end
 endfunction: build_phase
 
-task run_phase(uvm_phase phase);
+task run_phase(uvm_phase phase);   
     phase.raise_objection(this, "Starting sequence in main phase");
     $display("%t Starting sequence run_phase", $time);
     seq.start(env.agt.sqr);

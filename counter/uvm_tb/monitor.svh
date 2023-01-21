@@ -1,12 +1,9 @@
 import uvm_pkg::*;
-'include "uvm_macros.svh"
-'include "counter_if.svh"
+`include "uvm_macros.svh"
+`include "counter_if.svh"
 
 class monitor extends uvm_monitor;
-    'uvm_components_utils(monitor)
-
-
-    endclass
+    `uvm_component_utils(monitor)
 
     virtual counter_if vif;
     uvm_analysis_port #(transaction) counter_ap;
@@ -57,4 +54,5 @@ class monitor extends uvm_monitor;
         end
     end
     endtask: run_phase
+
 endclass: monitor
