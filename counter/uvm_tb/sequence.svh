@@ -1,11 +1,13 @@
+//Help
+
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 `include "transaction.svh"
 
 class counter_sequence extends uvm_sequence #(transaction);
-    `uvm_object_utils(counter_sequence)
+    `uvm_object_utils(ctr_sequence)
     
-    function new(string name = "");
+    function new(string name = "ctr_sequence");
         super.new(name);
     endfunction: new
 
@@ -13,7 +15,6 @@ class counter_sequence extends uvm_sequence #(transaction);
     task body();
         transaction req_item;
         req_item = transaction#(4)::type_id::create("req_item");
-
         repeat(20) begin
             start_item(req_item);
             if (!req_item.randomize()) begin

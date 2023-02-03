@@ -1,5 +1,6 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
+`include "counter_if.svh"
 
 class driver extends uvm_driver#(transaction);
     `uvm_component_utils(driver)
@@ -19,13 +20,15 @@ class driver extends uvm_driver#(transaction);
 
     task run_phase(uvm_phase phase);
         transaction req_item;
-
+        DUT_reset();
+        vif.check = 0;
+    
         forever begin
             seq_item_port.get_next_item(req_item);
-            DUT_reset();
+        //    DUT_reset(); 
             vif.overflow_val = req_item.overflow_val;
             vif.enable_time = req_item.num_clk;
-            vif_count_enable = 1;
+            vif.count_enable = 1;
             repeat(req_item.num_clk) begin
                 @(posedge vif.clk);
             end
@@ -45,8 +48,8 @@ class driver extends uvm_driver#(transaction);
         vif.count_enable = 0;
         @(posedge vif.clk);
         vif.nRST = 0;
-        @(posedge vif.clk);
+        @(posedge vif.clk); 
         vif.nRST = 1;
         @(posedge vif.clk);
     endtask
-endclass
+endclass: driver

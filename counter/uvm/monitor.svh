@@ -37,16 +37,16 @@ class monitor extends uvm_monitor;
         // captures activity between the driver and DUT
         tx = transaction#(4)::type_id::create("tx");
         tx.overflow_val = vif.overflow_val;
-        //tx.num_clk = vif.enable_time;
+        tx.num_clk = vif.enable_time;
 
         // check if there is a new transaction
         if (!tx.input_equal(prev_tx) && tx.overflow_val !== 'z) begin
         // send the new transaction to predictor though counter_ap
         counter_ap.write(tx);
         // wait until check is asserted
-        //while(!vif.check) begin
-        //    @(posedge vif.clk);
-        //end
+        while(!vif.check) begin
+            @(posedge vif.clk);
+        end
         // capture the responses from DUT and send it to scoreboard through result_ap
         tx.result_count_out = vif.count_out;
         tx.result_flag = vif.overflow_flag;

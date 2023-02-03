@@ -17,7 +17,7 @@ run:
 	-coverage \
 	+UVM_TESTNAME="base_int_test" \
 	+UVM_VERBOSITY=UVM_LOW \
-	-do "do wave.do" -do "run -all" &
+	-do "coverage save -onexit coverage.ucdb" -do "run -all" &
 
 run-period_10ns_test:
 	vsim -c tb_uvm_fifo -L \
@@ -71,7 +71,7 @@ run-full_random_test:
 	-coverage \
 	+UVM_TESTNAME="full_random_test" \
 	+UVM_VERBOSITY=UVM_LOW \
-	-do "do wave.do" -do "run -all" &
+	-do "coverage save -onexit coverage.ucdb" -do "run -all" &
 
 run_gui:
 	vsim -i tb_uvm_fifo -L \
@@ -82,12 +82,16 @@ run_gui:
 	+UVM_VERBOSITY=UVM_LOW \
 	-do "do wave.do" -do "run -all" &
 
+view_cov:
+	vsim -viewcov coverage.ucdb
+
 clean:
 	rm -rf work
 	rm -rf mitll90_Dec2019_all
 	rm -rf covhtmlreport
 	rm *.log
 	rm transcript
+	rm *.ucdb
 	rm *.wlf
 	rm *.vstf
 
