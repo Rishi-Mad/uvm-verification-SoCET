@@ -6,26 +6,25 @@
 
 module socetlib_counter
 #(
-    parameter BITS_WIDTH = 4
+    parameter int NBITS = 4
 )
 (
-    input wire clk,
-    input wire nRST,
-    input wire clear,
-    input wire count_enable,
-    input wire [(BITS_WIDTH - 1) : 0] overflow_val,
-    output wire [(BITS_WIDTH - 1) : 0] count_out,
-    output wire overflow_flag
+    input CLK,
+    input nRST,
+    input clear,
+    input count_enable,
+    input [(NBITS - 1) : 0] overflow_val,
+    output logic [(NBITS - 1) : 0] count_out,
+    output logic overflow_flag
 );
-    reg [(BITS_WIDTH - 1) : 0] count;
-    reg [(BITS_WIDTH - 1) : 0] n_count;
-    reg of; //overflow 
-    reg n_of; //next_overflow
-
+    logic [(NBITS - 1) : 0] count;
+    logic [(NBITS - 1) : 0] n_count;
+    logic of; //overflow 
+    logic n_of; //next_overflow
     assign count_out = count;
     assign overflow_flag = of;
 
-    always_ff @(posedge clk, negedge nRST) begin
+    always_ff @(posedge CLK, negedge nRST) begin
         if (nRST == 1'b0) begin
             count <= 0;
             of <= 0;
@@ -40,23 +39,20 @@ module socetlib_counter
         n_count = 0;
         n_of = 0;
 
-        if (clear == 1'b1) 
+        if (clear == 1'b1) begin
             n_count = 0; 
-
-        else if (count_enable) begin
+        end else if (count_enable) begin
             if (count + 1 > overflow_val)
                 n_count = 1;
             else 
                 n_count = count + 1;
-        end
-
-        else 
+        end else begin 
             n_count = count;
+        end
             
         if (n_count == overflow_val) begin
             n_of = 1'b1;
-        end
-        else begin
+        end else begin
             n_of = 1'b0;
         end
     end 
