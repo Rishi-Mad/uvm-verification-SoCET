@@ -4,7 +4,7 @@ import uvm_pkg::*;
 `include "sr_if.svh"
 //`include "scoreboard.svh"
 //`include "predictor.svh"
-//`include "transaction.svh"
+`include "transaction.svh"
 
 class environment extends uvm_env;
     `uvm_component_utils(environment)
@@ -18,6 +18,7 @@ class environment extends uvm_env;
     endfunction
 
     function void build_phase(uvm_phase phase);
+        super.build_phase(phase);
         agt = agent::type_id::create("agt", this);
 //        pred = predictor::type_id::create("pred", this);
 //        scb = scoreboard::type_id::create("scb", this);

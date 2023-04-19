@@ -4,29 +4,36 @@ import uvm_pkg::*;
 
 class test extends uvm_test; //Declare new class that derives from "uvm_test"
     `uvm_component_utils(test) //Register classs with UVM Factory
-    
-    function new(string name = "test", uvm_component parent = null); //Define "new" function
-        super.new(name, parent);
-    endfunction
 
     //Declare testbench components
     environment env; // testbench environment
     virtual sr_if vif;
+    sr_sequence seq;
+
+    function new(string name = "test", uvm_component parent); //Define "new" function
+        super.new(name, parent);
+    endfunction
+
+
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
         env = environment::type_id::create("env", this);
-        if (!uvm_config_db#(virtual sr_if)::get(this, "", "sr_vif", vif)) begin 
+        seq = sr_sequence::type_id::create("seq");
+
+        if (!uvm_config_db#(virtual sr_if)::get(this, "", "sr_if", vif)) begin 
 		   `uvm_fatal("TEST", "No virtual interface specified for this test instance")
 		end 
-		uvm_config_db#(virtual sr_if)::set(this, "env.agt*", "sr_vif", vif);
+		//uvm_config_db#(virtual sr_if)::set(this, "env.agt*", "sr_vif", vif);
 
+        seq.randomize();
     endfunction
 
     task run_phase(uvm_phase phase);
-        sr_sequence seq = sr_sequence::type_id::create("seq");
+        
         phase.raise_objection(this);
         seq.start(env.agt.sqr);
+        #200;
         phase.drop_objection(this);
     endtask
 

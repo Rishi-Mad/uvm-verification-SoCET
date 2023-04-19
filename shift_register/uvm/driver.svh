@@ -13,33 +13,26 @@ class driver extends uvm_driver#(transaction);
 
     function void build_phase(uvm_phase phase);
         super.build_phase(phase);
-        if (!uvm_config_db#(virtual counter_if)::get(this, "", "counter_vif", vif)) begin
+        if (!uvm_config_db#(virtual sr_if)::get(this, "", "sr_if", vif)) begin
             `uvm_fatal("Driver", "No virtual interface specified for this test instance");
         end
     endfunction
 
     task run_phase(uvm_phase phase);
         transaction req_item;
-        //DUT_reset();
+        DUT_reset();
         super.run_phase(phase);
         vif.check = 0;
 
         forever begin
+            `uvm_info("DRV", $sformatf("Wait for item from sequencer"), UVM_HIGH)
             seq_item_port.get_next_item(req_item);
-            DUT_reset();
-            vif.shift_en = req_item.shift_en;
-            vif.serial_in = req_item.serial_in;
-            vif.parallel_in = req_item.parallel_in;
-            vif.parallel_en = req_item.parallel_en;
-            
-            repeat(req_item.num_clk) begin
-                @(posedge vif.clk);
-            end
-            vif.shift_en = 0;
-            vif.parallel_en = 0;
-            #(0.2)
-            vif.check = 1;
             @(posedge vif.clk);
+            //DUT_reset();
+            vif.shift_en = 1;
+            vif.serial_in = req_item.serial_in;
+            @(posedge vif.clk);
+            //vif.shift_en = 0;
             seq_item_port.item_done();
         end
     endtask

@@ -1,4 +1,5 @@
-`ifdef SR_IF_SVH
+
+`ifndef SR_IF_SVH
 `define SR_IF_SVH
 
 interface sr_if #(parameter NUM_BITS = 4) (input logic clk);
@@ -13,8 +14,8 @@ interface sr_if #(parameter NUM_BITS = 4) (input logic clk);
   
   modport tb( // Define signal direction for testbench
     input parallel_out, serial_out, clk,
-    output nRST, shift_en, parallel_en serial_in, parallel_in, check
-  );
+    output nRST, shift_en, parallel_en, serial_in, parallel_in, check 
+);
 
   modport dut( // Define signal direction for DUT
     input nRST, shift_en, parallel_en, serial_in, parallel_in, clk,

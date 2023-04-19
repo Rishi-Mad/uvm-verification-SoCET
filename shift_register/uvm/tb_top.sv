@@ -12,11 +12,11 @@ module tb_top ();
   
   //Instantiate the Interface and Design
   sr_if dut_if(clk);
-  socetlib_shift_reg dut(dut_if.dut);	// Pass interface to DUT
+  socetlib_shift_reg dut(dut_if);	// Pass interface to DUT
 
   initial begin // Not sure what this block does
-    uvm_config_db#(virtual sr_if)::set(null, "uvm_test_top", "sr_if", dut_if);
-    run_test("base_test");
+    uvm_config_db#(virtual sr_if)::set(null, "", "sr_if", dut_if);
+    run_test("test");
   end
   
 endmodule

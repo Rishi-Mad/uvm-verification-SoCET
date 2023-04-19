@@ -17,7 +17,7 @@ module socetlib_shift_reg
 
   	reg [NUM_BITS-1:0] q, n_q;
 
-	assign parallel_out = q;
+	assign sif.parallel_out = q;
 
 	always_ff @(posedge sif.clk, negedge sif.nRST) begin
 		if (sif.nRST == 1'b0) begin
@@ -30,10 +30,10 @@ module socetlib_shift_reg
 
 	always_comb begin
 		n_q = q;
-		if (sif.shift_enable && SHIFT_MSB) begin
+		if (sif.shift_en && SHIFT_MSB) begin
 			n_q = {q[NUM_BITS-2:0], sif.serial_in};
 		end
-		else if (sif.shift_enable && ~SHIFT_MSB) begin
+		else if (sif.shift_en && ~SHIFT_MSB) begin
 			n_q = {sif.serial_in, q[NUM_BITS-1:1]};
 		end
 	end
