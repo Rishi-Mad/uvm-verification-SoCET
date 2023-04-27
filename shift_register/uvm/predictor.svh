@@ -16,6 +16,12 @@ class predictor extends uvm_subscriber #(transaction);
         pred_ap = new("pred_ap", this);
     endfunction
 
+    function void write (transaction t)
+        // t is transaction sent from monitor
+        output_tx = transaction#(4)::type_id::create("output_tx", this);
+        output_tx.copy(t);
+    endfunction
+
 
 
 

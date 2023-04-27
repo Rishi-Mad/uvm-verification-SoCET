@@ -30,7 +30,6 @@ class test extends uvm_test; //Declare new class that derives from "uvm_test"
     endfunction
 
     task run_phase(uvm_phase phase);
-        
         phase.raise_objection(this);
         seq.start(env.agt.sqr);
         #200;
@@ -38,3 +37,13 @@ class test extends uvm_test; //Declare new class that derives from "uvm_test"
     endtask
 
     endclass
+
+class testnum1 extends test;
+    `uvm_component_utils(testnum1)
+    function new(string name = "testnum1", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
+
+endclass
+
+
