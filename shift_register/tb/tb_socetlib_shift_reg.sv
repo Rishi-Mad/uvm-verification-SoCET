@@ -27,7 +27,7 @@ module tb_socetlib_shift_reg();
   logic   tb_check;
 
   // Declare the Test Bench Signals for Expected Results
-  logic [SR_MAX_BIT:0] tb_expected_ouput;
+  logic [SR_MAX_BIT:0] tb_expected_output;
   logic tb_test_data [];
 
   // Declare DUT Connection Signals
@@ -67,7 +67,7 @@ module tb_socetlib_shift_reg();
   begin
     tb_mismatch = 1'b0;
     tb_check    = 1'b1;
-    if(tb_expected_ouput == tb_parallel_out) begin // Check passed
+    if(tb_expected_output == tb_parallel_out) begin // Check passed
       $info("Correct parallel output %s during %s test case", check_tag, tb_test_case);
     end
     else begin // Check failed
@@ -114,6 +114,19 @@ module tb_socetlib_shift_reg();
   end
   endtask
 
+  task load_value;
+    input [SR_MAX_BIT:0] value;
+  begin
+    @(negedge tb_clk);
+    tb_parallel_in = value;
+    tb_parallel_load = 1;
+
+    @(posedge tb_clk);
+    #(PROPAGATION_DELAY);
+    tb_parallel_load = 0;
+  end
+  endtask
+
   // Clock generation block
   always begin
     // Start with clock low to avoid false rising edge events at t=0
@@ -128,12 +141,12 @@ module tb_socetlib_shift_reg();
 /* verilator lint_off PINMISSING */
 
   // DUT Portmap
-  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB)) DUT
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB), .PTS(1), .RESET_VAL(INACTIVE_VALUE)) DUT
                     (.clk(tb_clk), .nRST(tb_nRST), 
                     .serial_in(tb_serial_in), 
                     .shift_enable(tb_shift_enable),
-//                    .parallel_load(tb_parallel_load),
-//                    .parallel_in(tb_parallel_in),
+                    .parallel_load(tb_parallel_load),
+                    .parallel_in(tb_parallel_in),
                     .parallel_out(tb_parallel_out));
 
 /* verilator lint_on PINMISSING */
@@ -144,8 +157,8 @@ module tb_socetlib_shift_reg();
     tb_nRST            = 1'b1; // Initialize to be inactive
     tb_serial_in        = 1'b1; // Initialize to inactive value
     tb_shift_enable     = 1'b0; // Initialize to be inactive
-//    tb_parallel_in      = '0;
-//    tb_parallel_load    = 0;
+    tb_parallel_in      = '0;
+    tb_parallel_load    = 0;
     tb_test_num         = 0;    // Initialize test case counter
     tb_test_case        = "Test bench initializaton";
     tb_stream_check_tag = "N/A";
@@ -169,7 +182,7 @@ module tb_socetlib_shift_reg();
     #(CLK_PERIOD * 0.5);
 
     // Check that internal state was correctly reset
-    tb_expected_ouput = RESET_OUTPUT_VALUE;
+    tb_expected_output = RESET_OUTPUT_VALUE;
     check_output("after reset applied");
 
     // Check that the reset value is maintained during a clock cycle
@@ -193,7 +206,7 @@ module tb_socetlib_shift_reg();
     tb_test_data = '{`SR_SIZE_BITS{1'b0}};
 
     // Define the expected result
-    tb_expected_ouput = '0;
+    tb_expected_output = '0;
 
     // Contiguously stream enough zeros to fill the shift register
     send_stream(tb_test_data);
@@ -211,14 +224,14 @@ module tb_socetlib_shift_reg();
     tb_test_data = '{`SR_SIZE_BITS{1'b0}};
 
     // Bootstrap the expected output signal
-    tb_expected_ouput = RESET_OUTPUT_VALUE;
+    tb_expected_output = RESET_OUTPUT_VALUE;
 
     // Disconiguously stream out all of the bits in the provided input vector
     for(tb_bit_num = 0; tb_bit_num < tb_test_data.size(); tb_bit_num++) begin
       // Send the current bit
       send_bit(tb_test_data[tb_bit_num]);
       // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b0};
+      tb_expected_output = {tb_expected_output[(SR_MAX_BIT-1):0], 1'b0};
 
       // Check that the current bit got pulled in
       $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
@@ -241,13 +254,22 @@ module tb_socetlib_shift_reg();
     tb_test_data = '{`SR_SIZE_BITS{1'b1}};
 
     // Define the expected result
-    tb_expected_ouput = '1;
+    tb_expected_output = '1;
 
     // Contiguously stream enough zeros to fill the shift register
     send_stream(tb_test_data);
 
     // Check the result of the full stream
     check_output("after one fill stream");
+
+    // TEST 5:
+    tb_test_num ++;
+    tb_test_case = "Parallel load random";
+
+    tb_expected_output = (`SR_SIZE_BITS)'($urandom);
+    load_value(tb_expected_output);
+
+    check_output("after parallel load");
 
     $finish;
 
