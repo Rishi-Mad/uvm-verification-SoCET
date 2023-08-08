@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:shift_register:0.0.1
+name: socet:digital-lib:shift_register:0.0.2
 description: Parameterizable shift register 
 
 filesets:
@@ -13,11 +13,16 @@ filesets:
             - tb/tb_socetlib_shift_reg.sv
         file_type: systemVerilogSource
 
+    verilator_wrapper:
+        files:
+            - "tb/tb_socetlib_shift_reg.cpp"
+        file_type: cppSource
+
 targets:
     default: &default
         filesets:
             - rtl
-        toplevel: socetlib_shift_register
+        toplevel: socetlib_shift_reg
     
     sim:
         <<: *default
@@ -25,7 +30,18 @@ targets:
         default_tool: xcelium
         filesets_append:
             - tb
-        toplevel: tb_socetlib_shift_register
+            - "tool_verilator? (verilator_wrapper)"
+        toplevel: tb_socetlib_shift_reg
+        tools:
+            verilator:
+                verilator_options:
+                    - --cc
+                    - --trace
+                    - --exe
+                    - --timing
+                    - --coverage
+                make_options:
+                    - -j
 
     gui:
         <<: *default
@@ -33,7 +49,7 @@ targets:
         default_tool: xcelium
         filesets_append:
             - tb
-        toplevel: tb_socetlib_shift_register
+        toplevel: tb_socetlib_shift_reg
         tools:
             xcelium:
                 xrun_options:

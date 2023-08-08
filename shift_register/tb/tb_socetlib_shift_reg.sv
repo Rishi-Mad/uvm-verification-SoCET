@@ -8,7 +8,7 @@
     `define MSB 1
 `endif
 
-module tb_socet_shift_reg();
+module tb_socetlib_shift_reg();
   // Define parameters
   // Common parameters
   localparam CLK_PERIOD        = 2.5;
@@ -35,6 +35,8 @@ module tb_socet_shift_reg();
   logic                tb_nRST;
   logic                tb_shift_enable;
   logic                tb_serial_in;
+  logic                tb_parallel_load;
+  logic [SR_MAX_BIT:0] tb_parallel_in;
   logic [SR_MAX_BIT:0] tb_parallel_out;
 
 // Task for standard DUT reset procedure
@@ -123,13 +125,18 @@ module tb_socet_shift_reg();
     #(CLK_PERIOD/2.0);
   end
 
+/* verilator lint_off PINMISSING */
+
   // DUT Portmap
-  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB)) DUT 
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB)) DUT
                     (.clk(tb_clk), .nRST(tb_nRST), 
                     .serial_in(tb_serial_in), 
-                    .shift_enable(tb_shift_enable), 
+                    .shift_enable(tb_shift_enable),
+//                    .parallel_load(tb_parallel_load),
+//                    .parallel_in(tb_parallel_in),
                     .parallel_out(tb_parallel_out));
 
+/* verilator lint_on PINMISSING */
 
   // Test bench main process
   initial begin
@@ -137,6 +144,8 @@ module tb_socet_shift_reg();
     tb_nRST            = 1'b1; // Initialize to be inactive
     tb_serial_in        = 1'b1; // Initialize to inactive value
     tb_shift_enable     = 1'b0; // Initialize to be inactive
+//    tb_parallel_in      = '0;
+//    tb_parallel_load    = 0;
     tb_test_num         = 0;    // Initialize test case counter
     tb_test_case        = "Test bench initializaton";
     tb_stream_check_tag = "N/A";
@@ -239,5 +248,8 @@ module tb_socet_shift_reg();
 
     // Check the result of the full stream
     check_output("after one fill stream");
+
+    $finish;
+
   end
 endmodule
