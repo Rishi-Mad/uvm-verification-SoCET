@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:edge_detector:0.0.1
+name: socet:digital-lib:edge_detector:0.0.2
 description: N-bit edge detector (positive and negative edges)
 
 filesets:

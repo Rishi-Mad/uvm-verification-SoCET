@@ -19,7 +19,7 @@ module socetlib_edge_detector #(
     //flip flop behavior
     always_ff @ (posedge CLK, negedge nRST) begin
         if(~nRST)
-            signal_r <= '0;
+            signal_r <= signal;
         else 
             signal_r <= signal;
     end
