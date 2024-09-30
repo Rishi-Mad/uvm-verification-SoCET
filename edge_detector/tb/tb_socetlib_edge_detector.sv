@@ -32,6 +32,8 @@ module tb_socetlib_edge_detector;
 
 
     initial begin
+        $dumpfile("waveform.fst");
+        $dumpvars(0, tb_socetlib_edge_detector);
         $timeformat(-9, 2, " ns", 20);
 
         tb_signal = 0;
