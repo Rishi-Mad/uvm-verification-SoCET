@@ -3,3 +3,8 @@
 **/.simvision/*
 **/waves.shm/*
 **/build/*
+**/work/*
+*.log
+*.swp
+.*.swp
+
