@@ -9,16 +9,16 @@ module socetlib_shift_reg
 	parameter RESET_VAL = 1'b1 // reset value of the shift register (1'b1 or 1'b0)
 )
 (
-	input wire clk,
-	input wire nRST,
-	input wire shift_enable,
-	input wire serial_in,
-	input wire parallel_load,
-	input wire [NUM_BITS-1:0] parallel_in,
-	output wire [NUM_BITS-1:0] parallel_out 
+	input clk,
+	input nRST,
+	input shift_enable,
+	input serial_in,
+	input parallel_load,
+	input [NUM_BITS-1:0] parallel_in,
+	output logic [NUM_BITS-1:0] parallel_out 
 );
 
-  	reg [NUM_BITS-1:0] q, n_q;
+  	logic [NUM_BITS-1:0] q, n_q;
 
 	assign parallel_out = q;
 

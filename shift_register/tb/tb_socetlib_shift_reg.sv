@@ -153,6 +153,8 @@ module tb_socetlib_shift_reg();
 
   // Test bench main process
   initial begin
+    $dumpfile("waveform.fst");
+    $dumpvars(0, tb_socetlib_shift_reg);
     // Initialize all of the test inputs
     tb_nRST            = 1'b1; // Initialize to be inactive
     tb_serial_in        = 1'b1; // Initialize to inactive value
