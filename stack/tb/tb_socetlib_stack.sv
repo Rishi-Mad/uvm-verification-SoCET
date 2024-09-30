@@ -88,6 +88,8 @@ module tb_socetlib_stack();
 
 
     initial begin
+        $dumpfile("waveform.fst");
+        $dumpvars(0, tb_socetlib_stack);
         nRST = 1'b1;
         clear = 1'b0;
         push = 1'b0;
