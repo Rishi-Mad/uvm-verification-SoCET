@@ -8,4 +8,5 @@
 *.swp
 .*.swp
 **/obj_dir/*
+*.dat
 

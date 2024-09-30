@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:fifo:0.0.1
+name: socet:digital-lib:fifo:0.0.3
 description: Simple FIFO buffer 
 
 filesets:
@@ -12,11 +12,11 @@ filesets:
         files:
             - tb/tb_socetlib_fifo.sv
         file_type: systemVerilogSource
-
-    verilator_tb:
+    
+    waiver:
         files:
-            - tb/tb_socetlib_fifo.cc : {file_type : cppSource}
-        file_type: verilogSource
+            - tb_waiver.vlt
+        file_type: systemVerilogSource
 
     fpga:
         files:
@@ -33,11 +33,21 @@ targets:
     sim:
         <<: *default
         description: Simulate w/TB
-        default_tool: xcelium
+        default_tool: verilator
         filesets_append:
             - tb
+            - tool_verilator ? (waiver)
         toplevel: tb_socetlib_fifo
         tools:
+            verilator:
+                verilator_options:
+                    - --binary
+                    - --trace-fst
+                    - --trace-structs
+                    - --coverage
+                make_options:
+                    - -j
+
             vcs:
                 vcs_options:
                     - -assert svaext
@@ -49,16 +59,6 @@ targets:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-
-    verilate:
-        filesets: [rtl, verilator_tb]
-        description: Simulate with Verilator
-        default_tool: verilator
-        toplevel: socetlib_fifo
-        tools:
-            verilator:
-                mode: cc
-                verilator_options: ["--trace", "--trace-structs", "--report-unoptflat", "--coverage-line", "--coverage-toggle"]
 
     gui:
         <<: *default
@@ -91,3 +91,10 @@ targets:
             - tb
         description: Linting
         default_tool: veriblelint
+
+parameters:
+    coverage_file:
+        datatype: file
+        default: "coverage.dat"
+        description: "Name of coverage file for Verilator coverage reporting"
+        paramtype: plusarg

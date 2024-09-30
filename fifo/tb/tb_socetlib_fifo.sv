@@ -103,6 +103,8 @@ module tb_socetlib_fifo();
     endtask
 
     initial begin
+        $dumpfile("waveform.fst");
+        $dumpvars(0, tb_socetlib_fifo);
         nRST = 1'b1;
         WEN = 1'b0;
         REN = 1'b0;
