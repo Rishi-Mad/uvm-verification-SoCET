@@ -1,0 +1,93 @@
+CAPI=2:
+name: socet:digital-lib:fifo:0.0.1
+description: Simple FIFO buffer 
+
+filesets:
+    rtl:
+        files:
+            - src/socetlib_fifo.sv
+        file_type: systemVerilogSource
+
+    tb:
+        files:
+            - tb/tb_socetlib_fifo.sv
+        file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - tb/tb_socetlib_fifo.cc : {file_type : cppSource}
+        file_type: verilogSource
+
+    fpga:
+        files:
+            - fpga/fpga_socetlib_fifo.sv
+        file_type: systemVerilogSource
+
+targets:
+    default: &default
+        filesets:
+            - rtl
+        toplevel: socetlib_fifo
+        # No parameters?
+    
+    sim:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_fifo
+        tools:
+            vcs:
+                vcs_options:
+                    - -assert svaext
+                    - -debug_access+pp
+                    - -debug_access+all
+                    - -debug_pp +vcd+vcdpluson
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+
+    verilate:
+        filesets: [rtl, verilator_tb]
+        description: Simulate with Verilator
+        default_tool: verilator
+        toplevel: socetlib_fifo
+        tools:
+            verilator:
+                mode: cc
+                verilator_options: ["--trace", "--trace-structs", "--report-unoptflat", "--coverage-line", "--coverage-toggle"]
+
+    gui:
+        <<: *default
+        description: Simulate TB with GUI
+        default_tool: xcelium
+        filesets_append:
+            - tb
+        toplevel: tb_socetlib_fifo
+        tools:
+            xcelium:
+                xrun_options:
+                    - -gui
+                    - -access +rwc
+    fpga:
+        <<: *default
+        filesets_append:
+            - fpga
+        description: FPGA Wrapper
+        default_tool: quartus
+        toplevel: fpga_socetlib_fifo
+        tools:
+            quartus:
+                family: Cyclone 10 GX
+                device: 10CX220YF672E5G
+
+    lint:
+        <<: *default
+        filesets_append:
+            - fpga
+            - tb
+        description: Linting
+        default_tool: veriblelint

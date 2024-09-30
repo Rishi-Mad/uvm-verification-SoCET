@@ -1,9 +1,8 @@
 
 
 module socetlib_fifo #(
-    parameter type T = logic [7:0], // total FIFO entries
-    parameter DEPTH = 8,
-    parameter ADDR_BITS = $clog2(DEPTH)
+    parameter type T = logic [7:0], // type of a FIFO entry
+    parameter int DEPTH = 8 // # of FIFO entries
 )(
     input CLK,
     input nRST,
@@ -15,23 +14,22 @@ module socetlib_fifo #(
     output logic empty,
     output logic underrun, 
     output logic overrun,
-    output logic [ADDR_BITS-1:0] count,
+    output logic [$clog2(DEPTH)-1:0] count,
     output T rdata
 );
 
     // Parameter checking
     //
     // Width can be any number of bits > 1, but depth must be a power-of-2 to accomodate addressing scheme
-    // Address bits should not be changed by the user.
+    // TODO: 
     generate
         if(DEPTH == 0 || (DEPTH & (DEPTH - 1) != 0)) begin
             $error("%m: DEPTH must be a power of 2 >= 1!");
         end
-
-        if(ADDR_BITS != $clog2(DEPTH)) begin
-            $error("%m: ADDR_BITS is automatically calculated, please do not override!");
-        end
     endgenerate
+    
+    localparam int ADDR_WIDTH = $clog2(DEPTH);
+
     
     logic full_internal, full_next, empty_internal, empty_next;
     logic overrun_next, underrun_next;
