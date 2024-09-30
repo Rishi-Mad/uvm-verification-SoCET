@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:synchronizer:0.0.1
+name: socet:digital-lib:synchronizer:0.0.2
 description: Synchronizer with parameterizable high/low and stage count
 
 filesets:
@@ -13,10 +13,10 @@ filesets:
             - tb/tb_socetlib_synchronizer.sv
         file_type: systemVerilogSource
 
-    verilator_tb:
+    waiver:
         files:
-            - tb/tb_socetlib_synchronizer.cc : {file_type : cppSource}
-        file_type: verilogSource
+            - tb_waiver.vlt
+        file_type: systemVerilogSource
 
     fpga:
         files:
@@ -33,11 +33,20 @@ targets:
     sim:
         <<: *default
         description: Simulate w/TB
-        default_tool: xcelium
+        default_tool: verilator
         filesets_append:
             - tb
+            - tool_verilator ? (waiver)
         toplevel: tb_socetlib_synchronizer
         tools:
+            verilator:
+                verilator_options:
+                    - --binary
+                    - --trace-fst
+                    - --trace-structs
+                    - --coverage
+                make_options:
+                    - -j
             vcs:
                 vcs_options:
                     - -assert svaext
@@ -91,3 +100,10 @@ targets:
             - tb
         description: Linting
         default_tool: veriblelint
+
+parameters:
+    coverage_file:
+        datatype: file
+        default: "coverage.dat"
+        description: "Name of coverage file for Verilator coverage reporting"
+        paramtype: plusarg

@@ -21,7 +21,8 @@ module tb_socetlib_synchronizer();
 
 
     initial begin
-
+        $dumpfile("waveform.fst");
+        $dumpvars(0, tb_socetlib_synchronizer);
         $display("Running synchronizer with %d stages and %s reset value", TB_STAGES, TB_SENSE);
         async_in = (TB_SENSE == 1'b0) ? 1'b0 : 1'b1;
         nRST = 1'b1;
