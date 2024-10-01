@@ -10,8 +10,6 @@ module socetlib_synchronizer#(
 );
 
     // Test parameters
-    
-
     if(STAGES < 2) begin
         $error("socetlib_synchronizer: STAGES must be at least 2!");
     end else if(STAGES > 3) begin
@@ -22,15 +20,6 @@ module socetlib_synchronizer#(
     logic [STAGES-1:0] reset_val;
 
     assign reset_val = {STAGES{RESET_STATE}};
-
-    /*
-    generate
-        if(RESET_STATE == "HIGH") begin : gen_reset_state_high
-            assign reset_val = '1;
-        end else if(RESET_STATE == "LOW") begin : gen_reset_state_low
-            assign reset_val = '0;
-        end
-    endgenerate*/
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin

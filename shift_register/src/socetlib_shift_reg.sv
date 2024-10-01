@@ -3,10 +3,9 @@
 
 module socetlib_shift_reg
 #(
-	parameter NUM_BITS = 4,
-	parameter SHIFT_MSB = 1, //1 is MSB, 0 is LSB
-	parameter PTS = 0, // if pts is 1, it enables the parallel load. this is to keep current designs from breaking
-	parameter RESET_VAL = 1'b1 // reset value of the shift register (1'b1 or 1'b0)
+	parameter int NUM_BITS = 4,
+	parameter bit SHIFT_MSB = 1, //1 is MSB, 0 is LSB
+	parameter bit RESET_VAL = 1'b1 // reset value of the shift register (1'b1 or 1'b0)
 )
 (
 	input clk,
@@ -15,12 +14,14 @@ module socetlib_shift_reg
 	input serial_in,
 	input parallel_load,
 	input [NUM_BITS-1:0] parallel_in,
+	output logic serial_out,
 	output logic [NUM_BITS-1:0] parallel_out 
 );
 
   	logic [NUM_BITS-1:0] q, n_q;
 
 	assign parallel_out = q;
+	assign serial_out = SHIFT_MSB ? q[NUM_BITS-1] : q[0];
 
 	always_ff @(posedge clk, negedge nRST) begin
 		if (nRST == 1'b0) begin
@@ -40,7 +41,7 @@ module socetlib_shift_reg
 			n_q = {serial_in, q[NUM_BITS-1:1]};
 		end
 		// the parallel load should override any shift
-		if (parallel_load && PTS) begin
+		if (parallel_load) begin
 		    n_q = parallel_in;
 		end
 	end

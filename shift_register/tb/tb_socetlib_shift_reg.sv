@@ -141,7 +141,7 @@ module tb_socetlib_shift_reg();
 /* verilator lint_off PINMISSING */
 
   // DUT Portmap
-  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB), .PTS(1), .RESET_VAL(INACTIVE_VALUE)) DUT
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB), .RESET_VAL(INACTIVE_VALUE)) DUT
                     (.clk(tb_clk), .nRST(tb_nRST), 
                     .serial_in(tb_serial_in), 
                     .shift_enable(tb_shift_enable),

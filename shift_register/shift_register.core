@@ -1,5 +1,5 @@
 CAPI=2:
-name: socet:digital-lib:shift_register:0.0.3
+name: socet:digital-lib:shift_register:0.0.4
 description: Parameterizable shift register 
 
 filesets:
