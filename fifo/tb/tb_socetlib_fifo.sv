@@ -16,7 +16,7 @@ module tb_socetlib_fifo();
     logic [`TB_WIDTH-1:0] wdata, rdata;
     logic overrun, underrun;
     logic [ADDR_BITS-1:0] count;
-    
+
     int tb_count;
     string tb_block;
 
@@ -32,24 +32,29 @@ module tb_socetlib_fifo();
     task reset();
         @(negedge CLK);
         nRST = 1'b0;
+        tb_count = '0;
+        WEN = '0;
+        REN = '0;
+        clear = '0;
+        wdata = '0;
         repeat(2) @(negedge CLK);
         nRST = 1'b1;
     endtask
 
     task check_count();
         if(tb_count < `TB_DEPTH) begin
-            assert(tb_count == count)
-            else $display("Incorrect count in block %s at time %t, expected %h, got %h", 
-                            tb_block, $time, tb_count, count);
+            if (tb_count != count)
+                $display("Incorrect count in block %s at time %t, expected %h, got %h",
+                        tb_block, $time, tb_count, count);
 
-            assert(tb_count > 0 && !empty || empty)
-            else $display("'empty' flag incorrect in block %s at time %t", tb_block, $time);
+            if (!(tb_count > 0 && !empty || empty))
+                $display("'empty' flag incorrect in block %s at time %t", tb_block, $time);
         end else if(tb_count == `TB_DEPTH) begin
-            assert(full)
-            else $display("'full' flag not asserted in block %s at time %t", tb_block, $time);
+            if (!full)
+                $display("'full' flag not asserted in block %s at time %t", tb_block, $time);
 
-            assert(!empty)
-            else $display("'empty' flag incorrectly asserted in block %s at time %t", tb_block, $time);
+            if (empty)
+                $display("'empty' flag incorrectly asserted in block %s at time %t", tb_block, $time);
         end else begin
             $error("tb_count higher than the data in the FIFO!");
         end
@@ -59,9 +64,9 @@ module tb_socetlib_fifo();
         input [`TB_WIDTH-1:0] expected_value
     );
         REN = 1'b1;
-        assert(rdata == expected_value)
-        else $display("Read (block %s): at time %t, expected %h, got %h", 
-                        tb_block, $time, expected_value, rdata);
+        if (rdata != expected_value)
+            $display("Read (block %s): at time %t, expected %h, got %h",
+                    tb_block, $time, expected_value, rdata);
         @(posedge CLK);
         #(1);
         REN = 1'b0;
@@ -88,17 +93,17 @@ module tb_socetlib_fifo();
     );
         REN = 1'b1;
         WEN = 1'b1;
-        assert(rdata == expected_value)
-        else $display("Read/Write (block %s): at time %t, expected %h, got %h",
-                        tb_block, $time, expected_value, rdata);
-        
+        if (rdata != expected_value)
+            $display("Read/Write (block %s): at time %t, expected %h, got %h",
+                    tb_block, $time, expected_value, rdata);
+
         wdata = value;
         @(posedge CLK);
         #(1);
         REN = 1'b0;
         WEN = 1'b0;
         // Count doesn't change here
-        check_count(); 
+        check_count();
 
     endtask
 
@@ -121,7 +126,7 @@ module tb_socetlib_fifo();
         for(int i = 0; i < `TB_DEPTH; i++) begin
             write_fifo(i);
         end
-        
+
         for(int i = 0; i < `TB_DEPTH; i++) begin
             read_fifo(i);
         end
@@ -133,8 +138,8 @@ module tb_socetlib_fifo();
         WEN = 1'b1;
         @(posedge CLK);
         #(1);
-        assert(overrun)
-        else $display("Expected overrun flag to be set in block %s, time %t", tb_block, $time);
+        if(!overrun)
+            $display("Expected overrun flag to be set in block %s, time %t", tb_block, $time);
 
         tb_block = "Check clear";
         tb_count = 0;
@@ -142,8 +147,8 @@ module tb_socetlib_fifo();
         @(posedge CLK);
         #(1);
         check_count();
-        assert(empty && !full && !overrun && !underrun)
-        else $display("FIFO Flags not reset correctly on clear in block %s, time %t", tb_block, $time);
+        if (!(empty && !full && !overrun && !underrun))
+            $display("FIFO Flags not reset correctly on clear in block %s, time %t", tb_block, $time);
         clear = 1'b0;
 
 
@@ -151,8 +156,8 @@ module tb_socetlib_fifo();
         REN = 1'b1;
         @(posedge CLK);
         #(1);
-        assert(underrun)
-        else $display("Underrun flag not set in block %s, time %t", tb_block, $time);
+        if (!underrun)
+            $display("Underrun flag not set in block %s, time %t", tb_block, $time);
 
         tb_block = "Resetting...";
         reset();

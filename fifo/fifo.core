@@ -12,6 +12,12 @@ filesets:
         files:
             - tb/tb_socetlib_fifo.sv
         file_type: systemVerilogSource
+
+    verilator_tb:
+        files:
+            - tb/fifo_wrapper.sv
+            - tb/tb_socetlib_fifo.cc : { fileType: cppSource }
+        file_type: systemVerilogSource
     
     waiver:
         files:
@@ -45,6 +51,7 @@ targets:
                     - --trace-fst
                     - --trace-structs
                     - --coverage
+                    - -Wno-WIDTHEXPAND
                 make_options:
                     - -j
 
@@ -59,6 +66,24 @@ targets:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
+
+    sim_cpp:
+        <<: *default
+        description: Simulate w/TB
+        default_tool: verilator
+        filesets_append:
+            - "tool_verilator? (verilator_tb)"
+        toplevel:
+            - "tool_verilator? (fifo_wrapper)"
+        tools:
+            verilator:
+                verilator_options:
+                    - --trace-fst
+                    - --trace-structs
+                    - --coverage
+                    - -Wno-WIDTHEXPAND
+                make_options:
+                    - -j
 
     gui:
         <<: *default
