@@ -16,7 +16,7 @@ filesets:
     verilator_tb:
         files:
             - tb/fifo_wrapper.sv
-            - tb/tb_socetlib_fifo.cc : { fileType: cppSource }
+            - tb/tb_socetlib_fifo.cc : { file_type: cppSource }
         file_type: systemVerilogSource
     
     waiver:
