@@ -1,7 +1,6 @@
-
-
 module socetlib_fifo #(
-    parameter type T = logic [7:0], // type of a FIFO entry
+    parameter SIZE = 8, 
+    //parameter type T = logic [7:0], // type of a FIFO entry
     parameter DEPTH = 8 // # of FIFO entries
 )(
     input CLK,
@@ -9,13 +8,13 @@ module socetlib_fifo #(
     input WEN,
     input REN,
     input clear,
-    input T wdata,
+    input logic [(SIZE-1):0] wdata, //T WAS CHANGED HERE
     output logic full,
     output logic empty,
     output logic underrun, 
     output logic overrun,
     output logic [$clog2(DEPTH+1)-1:0] count,
-    output T rdata
+    output logic [(SIZE-1):0] rdata  //T WAS CHANGED HERE 
 );
 
     // Parameter checking
@@ -33,7 +32,7 @@ module socetlib_fifo #(
     logic overrun_next, underrun_next;
     logic [ADDR_BITS-1:0] write_ptr, write_ptr_next, read_ptr, read_ptr_next;
     logic [$clog2(DEPTH+1)-1:0] count_next;
-    T [DEPTH-1:0] fifo, fifo_next;
+    logic [(SIZE-1):0] [DEPTH-1:0] fifo, fifo_next;  //T WAS CHANGED HERE 
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin
@@ -97,3 +96,6 @@ module socetlib_fifo #(
     assign empty = count == 0;
     assign rdata = fifo[read_ptr];
 endmodule
+
+
+

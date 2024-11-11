@@ -1,4 +1,5 @@
-# FIFO
+
+<!-- # FIFO
 DFF-based FIFO queue for single clock domains.
 
 ### RTL Diagram
@@ -35,4 +36,4 @@ On reset, the read/write pointers are set to an equal value to indicate an empty
 | Parameter     | Type | Description | Default Value | Valid Range |
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
 | `T` | `type` | Data type held in the FIFO | `logic [7:0]` | Any SystemVerilog type |
-| `DEPTH` | `int` | Number of entries in the FIFO | 8 | Any power of 2 >= 1 |
+| `DEPTH` | `int` | Number of entries in the FIFO | 8 | Any power of 2 >= 1 | -->
