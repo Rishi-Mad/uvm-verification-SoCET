@@ -9,12 +9,14 @@ module socetlib_synchronizer#(
     output logic sync_out
 );
 
+    `ifndef QUARTUS
     // Test parameters
     if(STAGES < 2) begin
         $error("socetlib_synchronizer: STAGES must be at least 2!");
     end else if(STAGES > 3) begin
         $error("socetlib_synchronizer: Are you SURE you wanted more than 3 stages of synchronizer???");
     end
+    `endif
 
     logic [STAGES-1:0] stages;
     logic [STAGES-1:0] reset_val;
