@@ -1,5 +1,5 @@
 
-<!-- # FIFO
+# FIFO
 DFF-based FIFO queue for single clock domains.
 
 ### RTL Diagram
@@ -10,13 +10,13 @@ DFF-based FIFO queue for single clock domains.
 |:---------:|:---------:|:----:|:-----------|
 | `CLK` | `input` | `logic` | Clock |
 | `nRST` | `input` | `logic` | Active-low asynchronous reset |
-| `wdata` | `input` | `T` | Data to be written to tail of FIFO |
+| `wdata` | `input` | `logic [(SIZE-1):0]` | Data to be written to tail of FIFO |
 | `full` | `output` | `logic` | Flag indicating FIFO is full |
 | `empty` | `output` | `logic` | Flag indicating FIFO is empty |
 | `underrun` | `output` | `logic` | Error flag raised by reading an empty FIFO |
 | `overrun` | `output` | `logic` | Error flag raised by writing a full FIFO |
 | `count` | `output` | `logic [$clog2(DEPTH)-1 : 0]` | Current occupancy of FIFO |
-| `rdata` | `output` | `T` | Head element of FIFO |
+| `rdata` | `output` | `logic [(SIZE-1):0]` | Head element of FIFO |
 
 ## Function
 This is a simple FIFO (First-In, First-Out) queue made from DFFs. This is *not* suitable for clock domain crossing applications. 
@@ -35,5 +35,5 @@ On reset, the read/write pointers are set to an equal value to indicate an empty
 ## Parameters
 | Parameter     | Type | Description | Default Value | Valid Range |
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
-| `T` | `type` | Data type held in the FIFO | `logic [7:0]` | Any SystemVerilog type |
+| `SIZE` | `int` | Bit Width of each data entry within FIFO | 8 | - |
 | `DEPTH` | `int` | Number of entries in the FIFO | 8 | Any power of 2 >= 1 | -->
