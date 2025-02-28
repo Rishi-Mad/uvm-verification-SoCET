@@ -35,5 +35,5 @@ On reset, the read/write pointers are set to an equal value to indicate an empty
 ## Parameters
 | Parameter     | Type | Description | Default Value | Valid Range |
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
-| `SIZE` | `int` | Bit Width of each data entry within FIFO | 8 | - |
+| `SIZE` | `int` | Bit Width of each data entry within FIFO | 8 | >= 1 |
 | `DEPTH` | `int` | Number of entries in the FIFO | 8 | Any power of 2 >= 1 | -->
