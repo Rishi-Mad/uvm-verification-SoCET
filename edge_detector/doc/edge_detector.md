@@ -1,5 +1,5 @@
 # Edge Detector
-Detects 0-1 or 1-0 transitions in an input signal between two cycles, *combinationally*.
+Detects 0-1 or 1-0 transitions in an input signal between two cycles combinationally and non-combinationally.
 
 ### RTL Diagram
 ![Edge Detector RTL Diagram](./edge_detector.png)
@@ -17,11 +17,11 @@ Detects 0-1 or 1-0 transitions in an input signal between two cycles, *combinati
 | `neg_edge` | `output` | `logic [WIDTH-1 : 0]` | High if a 1-0 transition detected on the corresponding input signal |
 
 ## Function
-This module detects transitions in the input signal(s) by latching their value in a DFF each cycle. The current input is compared
-to the latched value; if they are not the same, either the corresponding `pos_edge` or `neg_edge` value is set. Note that due to the way this is computed, the edge detection is ready within the same cycle it occurs, but is *not* driven from a register (this is a *Mealy machine*)!
+This module detects transitions in the input signal(s) by latching their value in a DFF each cycle (two chained DFFs for Moore mode). If the Mealy machine type is selected, the current input is compared to the latched value; if they are not the same, either the corresponding `pos_edge` or `neg_edge` value is set. If the Moore machine type is selected, the last two latched values are compared instead. Note that if the Moore machine type is chosen, the output is driven by a register, and the edge detection is delayed by one clock cycle.
 
 
 ## Parameters
 | Parameter     | Type | Description | Default Value | Valid Range |
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
 | `WIDTH` | `int` | Bit-width of the input signal to monitor | 1 | >= 1 |
+| `MOORE` | `bit` | Determines the Machine type. `MOORE = 0` indicates Mealy, and `MOORE = 1` indicates Moore | `0` | `0`, `1` |

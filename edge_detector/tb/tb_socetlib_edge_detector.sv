@@ -4,6 +4,7 @@ module tb_socetlib_edge_detector;
     logic CLK = 0, nRST;
     
     localparam NBITS = 4;
+    localparam bit MOORE = 1;
 
     always #(10) CLK++;
 
@@ -12,7 +13,7 @@ module tb_socetlib_edge_detector;
     logic [NBITS-1:0] tb_neg;
     int fails;
 
-    socetlib_edge_detector #(.WIDTH(NBITS)) DUT(
+    socetlib_edge_detector #(.WIDTH(NBITS), .MOORE(MOORE)) DUT(
         .CLK,
         .nRST,
         .signal(tb_signal),
@@ -43,6 +44,8 @@ module tb_socetlib_edge_detector;
 
         reset();
 
+        if (MOORE) #(20); // moore test
+
         if(tb_pos != (tb_signal & ~signal_last)) begin
             $display("Time %t [FAILED]: Posedge %b --> %b\n\tExpected %b, Actual %b\n", $time, signal_last, tb_signal, tb_signal & ~signal_last, tb_pos);
             fails++;
@@ -62,6 +65,7 @@ module tb_socetlib_edge_detector;
             signal_last = tb_signal;
             tb_signal = i;
             #(1);
+            if (MOORE) #(20); // moore test
 
             if(tb_pos != (tb_signal & ~signal_last)) begin
                 $display("Time %t [FAILED]: Posedge %b --> %b\n\tExpected %b, Actual %b\n", $time, signal_last, tb_signal, tb_signal & ~signal_last, tb_pos);
@@ -81,6 +85,8 @@ module tb_socetlib_edge_detector;
 
         reset();
 
+        if (MOORE) #(20); // moore test
+
         if(tb_pos != (tb_signal & ~signal_last)) begin
             $display("Time %t [FAILED]: Posedge %b --> %b\n\tExpected %b, Actual %b\n", $time, signal_last, tb_signal, tb_signal & ~signal_last, tb_pos);
             fails++;
@@ -95,6 +101,7 @@ module tb_socetlib_edge_detector;
             signal_last = tb_signal;
             tb_signal = i;
             #(1);
+            if (MOORE) #(20); // moore test
 
             if(tb_pos != (tb_signal & ~signal_last)) begin
                 $display("Time %t [FAILED]: Posedge %b --> %b\n\tExpected %b, Actual %b\n", $time, signal_last, tb_signal, tb_signal & ~signal_last, tb_pos);
