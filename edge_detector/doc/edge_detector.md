@@ -24,4 +24,5 @@ This module detects transitions in the input signal(s) by latching their value i
 | Parameter     | Type | Description | Default Value | Valid Range |
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
 | `WIDTH` | `int` | Bit-width of the input signal to monitor | 1 | >= 1 |
-| `MOORE` | `bit` | Determines the Machine type. `MOORE = 0` indicates Mealy, and `MOORE = 1` indicates Moore | `0` | `0`, `1` |
+| `RESET` | `logic` | Reset value of the signal being tracked | 0 | 0, 1 |
+| `MOORE` | `logic` | Determines the Machine type. `MOORE = 0` indicates Mealy, and `MOORE = 1` indicates Moore | `0` | `0`, `1` |

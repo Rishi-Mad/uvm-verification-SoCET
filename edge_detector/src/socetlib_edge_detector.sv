@@ -7,7 +7,8 @@
 
 module socetlib_edge_detector #(
     parameter WIDTH = 1,
-    parameter bit MOORE = 0
+    parameter logic RESET = 0,
+    parameter logic MOORE = 0
 )
 (
     input logic CLK, nRST, 
@@ -20,8 +21,8 @@ module socetlib_edge_detector #(
     //flip flop behavior
     always_ff @ (posedge CLK, negedge nRST) begin
         if(~nRST) begin
-            signal_r <= signal;
-            signal_rr <= signal_r;
+            signal_r <= RESET;
+            signal_rr <= RESET;
         end else begin 
             signal_r <= signal;
             signal_rr <= signal_r;
