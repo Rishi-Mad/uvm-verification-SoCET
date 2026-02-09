@@ -9,4 +9,4 @@
 .*.swp
 **/obj_dir/*
 *.dat
-
+*.fst
