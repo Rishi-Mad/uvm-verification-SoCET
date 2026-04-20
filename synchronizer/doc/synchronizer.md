@@ -1,8 +1,10 @@
 # Synchronizer
 This is an implementation of a simple, single-bit synchronizer, useful for synchronizing single-bit inputs from off-chip or between clock domains.
 
-### RTL Diagram
-![2-Stage Synchronizer](./synchronizer.png)
+## RTL Diagram
+![Two-stage synchronizer RTL diagram, described below](./synchronizer.png)
+
+The diagram shows the default two-stage configuration: `async_in` feeds the D input of the first DFF, whose Q output feeds the D input of the second DFF, whose Q output drives `sync_out`. Both flip-flops share the same clock and asynchronous reset. Additional stages (when `STAGES = 3`) extend the chain in the same pattern.
 
 ## I/O
 | Port Name | Direction | Type | Description |

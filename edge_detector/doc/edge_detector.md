@@ -1,11 +1,28 @@
 # Edge Detector
-Detects 0-1 or 1-0 transitions in an input signal between two cycles combinationally and non-combinationally.
+Detects 0-1 or 1-0 transitions in an input signal between two cycles, with options for combinational (Mealy) and sequential (Moore) output generation.
 
-### RTL Diagram
-![Edge Detector RTL Diagram](./edge_detector.png)
+## RTL Diagram
+![Edge detector RTL diagram showing Mealy and Moore variants, described below](./edge_detector.png)
 
-### Sample Waveform
-![Edge Detector Wave](./edge_detector_wave.png)
+The diagram shows both configurations side-by-side. In the Mealy variant
+(`MOORE = 0`, left), the input `signal` feeds a single DFF, and the current
+input is compared against the registered value by two combinational
+comparators that produce `pos_edge` (0-to-1) and `neg_edge` (1-to-0)
+directly. In the Moore variant (`MOORE = 1`, right), `signal` passes
+through two chained DFFs, and the comparators operate on the two registered
+values, so the outputs are themselves registered and lag the input by an
+extra cycle.
+
+## Sample Waveform
+![Edge detector sample waveform comparing Mealy and Moore behavior, described below](./edge_detector_wave.png)
+
+The waveform shows both variants reacting to the same `signal` input transitions.
+In the Mealy configuration (top), `pos_edge` and `neg_edge` pulse high in
+the same cycle as the corresponding 0-to-1 and 1-to-0 transitions on
+`signal`. In the Moore configuration (bottom), the same pulses appear one
+cycle later, reflecting the extra register stage on the output path.
+
+
 
 ## I/O
 | Port Name | Direction | Type | Description |
