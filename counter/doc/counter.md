@@ -30,7 +30,7 @@ Note that this behavior requires the counter to have at least 3 bits, such that 
 | `nRST` | `input` | `logic` | Active-low asynchronous reset |
 | `clear` | `input` | `logic` | Synchronous reset of count value |
 | `count_enable` | `input` | `logic` | Enables counting in the current cycle |
-| `overflow_val` | `input` | `logic [NBITS-1 : 0]` | Compare value for setting `overflow_flag` |
+| `overflow_val` | `input` | `logic [NBITS-1 : 0]` | Compare value for setting `overflow_flag`. Valid range: `>= 2`; `0` and `1` are unsupported (`0` prevents `overflow_flag` from ever asserting, since the counter always rolls over to `1` before comparing equal) |
 | `count_out` | `output` | `logic [NBITS-1 : 0]` | Current counter value |
 | `overflow_flag` | `output` | `logic` | Indicates that the count hit the `overflow_val` |
 

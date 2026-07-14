@@ -14,16 +14,6 @@ filesets:
         files:
             - tb/cdc_tb.sv
         file_type: systemVerilogSource
-    
-    waiver:
-        files:
-            - src_waiver.vlt
-        file_type: systemVerilogSource
-
-    fpga:
-        files:
-            - fpga/fpga_socetlib_fifo.sv
-        file_type: systemVerilogSource
 
 targets:
     default: &default
@@ -38,7 +28,6 @@ targets:
         default_tool: verilator
         filesets_append:
             - tb
-            - tool_verilator ? (waiver)
         toplevel: tb_socetlib_cdc_fifo
         tools:
             verilator:
@@ -48,6 +37,7 @@ targets:
                     - --trace-structs
                     - --coverage
                     - -Wno-WIDTHTRUNC
+                    - -Wno-WIDTHEXPAND
                 make_options:
                     - -j
 
@@ -69,28 +59,16 @@ targets:
         default_tool: xcelium
         filesets_append:
             - tb
-        toplevel: tb_socetlib_fifo
+        toplevel: tb_socetlib_cdc_fifo
         tools:
             xcelium:
                 xrun_options:
                     - -gui
                     - -access +rwc
-    fpga:
-        <<: *default
-        filesets_append:
-            - fpga
-        description: FPGA Wrapper
-        default_tool: quartus
-        toplevel: fpga_socetlib_fifo
-        tools:
-            quartus:
-                family: Cyclone 10 GX
-                device: 10CX220YF672E5G
 
     lint:
         <<: *default
         filesets_append:
-            - fpga
             - tb
         description: Linting
         default_tool: veriblelint

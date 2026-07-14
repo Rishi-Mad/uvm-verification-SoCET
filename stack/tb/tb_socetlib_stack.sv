@@ -19,6 +19,8 @@ module tb_socetlib_stack();
     int tb_count;
     string tb_block;
 
+    always #(10) CLK++;
+
     socetlib_stack #(
         .T(logic [`TB_WIDTH-1:0]),
         .DEPTH(`TB_DEPTH)
@@ -32,6 +34,11 @@ module tb_socetlib_stack();
         repeat(2) @(negedge CLK);
         nRST = 1'b1;
         @(posedge CLK);
+        // Without this, code immediately following reset() (e.g. the first
+        // stack_push/stack_pop call) sets push/pop in the same delta-cycle
+        // as this posedge, racing the DUT's own always_ff for that same
+        // edge, observed to occasionally get sampled a cycle early.
+        #(1);
     endtask
 
     task check_count();
@@ -54,8 +61,10 @@ module tb_socetlib_stack();
     );
         wdata = value;
         push = 1'b1;
+        pop = 1'b0;
         @(posedge CLK);
         #(1);
+        push = 1'b0;
         tb_count++;
         check_count();
     endtask
@@ -67,8 +76,10 @@ module tb_socetlib_stack();
         else $display("(Block %s, time %t) Incorrect data on pop, expected %x, got %x\n", tb_block, $time, expected_value, rdata);
 
         pop = 1'b1;
+        push = 1'b0;
         @(posedge CLK);
         #(1);
+        pop = 1'b0;
         tb_count--;
         check_count();
     endtask
@@ -83,6 +94,8 @@ module tb_socetlib_stack();
         wdata = value;
         @(posedge CLK);
         #(1);
+        pop = 1'b0;
+        push = 1'b0;
         check_count();
     endtask
 
@@ -131,27 +144,35 @@ module tb_socetlib_stack();
         reset();
 
         tb_block = "Check underflow";
-        pop = 1'b1;
-        @(posedge CLK);
-        #(1);
-        pop = 1'b0;
-        assert(underflow)
-        else $display("(Block %s, time %t) Did not get underflow flag\n", tb_block, $time);
+        for(int i = 0; i < 3; i++) begin
+            pop = 1'b1;
+            @(posedge CLK);
+            #(1);
+            pop = 1'b0;
+            assert(underflow)
+            else $display("(Block %s, time %t) Did not get underflow flag\n", tb_block, $time);
+            assert(empty && !full && count == 0)
+            else $display("(Block %s, time %t) Pop-while-empty corrupted empty/full/count: empty=%b full=%b count=%0d\n", tb_block, $time, empty, full, count);
+        end
 
         tb_block = "Resetting";
         reset();
-        
+
         tb_block = "Check overflow";
         for(int i = 0; i < `TB_DEPTH; i++) begin
             stack_push(i);
         end
 
-        push = 1'b1;
-        @(posedge CLK);
-        #(1);
-        push = 1'b0;
-        assert(underflow)
-        else $display("(Block %s, time %t) Did not get overflow flag\n", tb_block, $time);
+        for(int i = 0; i < 2 * `TB_DEPTH; i++) begin
+            push = 1'b1;
+            @(posedge CLK);
+            #(1);
+            push = 1'b0;
+            assert(overflow)
+            else $display("(Block %s, time %t) Did not get overflow flag\n", tb_block, $time);
+            assert(full && !empty && count == `TB_DEPTH)
+            else $display("(Block %s, time %t) Sustained overflow corrupted full/empty/count: full=%b empty=%b count=%0d (push #%0d)\n", tb_block, $time, full, empty, count, i);
+        end
 
         $finish();
     end

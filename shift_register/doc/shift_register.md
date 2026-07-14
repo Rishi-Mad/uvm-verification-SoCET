@@ -11,7 +11,7 @@ After the load, shifting resumes and `parallel_out` becomes 1110 as a 0 shifts i
 ## I/O
 | Port Name | Direction | Type | Description |
 |:---------:|:---------:|:----:|:-----------|
-| `CLK` | `input` | `logic` | Clock |
+| `clk` | `input` | `logic` | Clock |
 | `nRST` | `input` | `logic` | Active-low asynchronous reset |
 | `shift_enable` | `input` | `logic` | Enable shifting in direction of `SHIFT_MSB` parameter |
 | `serial_in` | `input` | `logic` | Serial input |
@@ -21,7 +21,7 @@ After the load, shifting resumes and `parallel_out` becomes 1110 as a 0 shifts i
 | `parallel_out` | `output` | `logic [NBITS-1 : 0]` | Parallel value of shift register |
 
 ## Function
-This implements a shift register capable of serial-to-parallel and parallel-to-serial conversion in addition to simple shifting. When the `shift_enable` signal is high, the shift register will shift by 1 position each cycle in the direction indicated by `SHIFT_MSB`. `shift_out` is driven by the opposite of the `SHIFT_MSB` flag; that is, if `SHIFT_MSB = 0`, `serial_out` will be the MSB of the register.
+This implements a shift register capable of serial-to-parallel and parallel-to-serial conversion in addition to simple shifting. When the `shift_enable` signal is high, the shift register will shift by 1 position each cycle in the direction indicated by `SHIFT_MSB`. `serial_out` reflects the bit position the register shifts *out of* -- that is, if `SHIFT_MSB = 1` (MSB-first), `serial_out` is the MSB (`q[NUM_BITS-1]`); if `SHIFT_MSB = 0` (LSB-first), `serial_out` is the LSB (`q[0]`).
 
 If `parallel_load` is high, the value of `parallel_in` is loaded into the shift register. This overrides `shift_enable`, and the register will *not* shift during this cycle.
 

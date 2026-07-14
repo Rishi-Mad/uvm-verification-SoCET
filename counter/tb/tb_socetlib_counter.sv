@@ -104,7 +104,7 @@ module tb_socetlib_counter();
   end
   
   // DUT Port map
-  socetlib_counter #(.BITS_WIDTH(`NUM_BIT_CNT)) DUT(.clk(tb_clk), .nRST(tb_nRST), .clear(tb_clear), .count_enable(tb_count_enable)
+  socetlib_counter #(.NBITS(`NUM_BIT_CNT)) DUT(.CLK(tb_clk), .nRST(tb_nRST), .clear(tb_clear), .count_enable(tb_count_enable)
     , .overflow_val(tb_overflow_val), .count_out(tb_count_out), .overflow_flag(tb_overflow_flag));
   
   // Test bench main process
@@ -195,5 +195,7 @@ module tb_socetlib_counter();
     #(CHECK_DELAY);
     check_output_count(4'd1, "after counting");
     check_output_overflow(1'b0, "overflow reset");
+
+    $finish();
   end
 endmodule

@@ -11,6 +11,7 @@ Parameterizable Wallace tree multiplier.
 | `b` | `input` | `logic [WIDTH-1:0]` | Multiplicand input |
 | `done` | `output` | `logic` | Indicates that a previous multiplication has finished |
 | `out` | `output` | `logic [2*WIDTH-1:0]` | Result of a previous multiplication |
+| `reduce_partial_prods` | `output` | `logic [2*WIDTH-1:0] [WIDTH-1:0]` | Debug/observability output exposing the partial products at the Stage 1/Stage 2 boundary (before reduction). Not needed for normal use of the multiplier. |
 
 ## Function
 This Wallace tree multiplier is fully pipelined and consists of 3 stages. The
@@ -41,5 +42,5 @@ Cycle delays with no stage merging for common bit widths are shown below.
 |:---------------:|:------:|:-------------|:---------------:|:-------------:|
 | `WIDTH` | `int` | Width of the `a` and `b` inputs. Output will be `2*WIDTH` bits wide | 32 | >= 1 |
 | `MERGE_PROD_GEN_REDUCE_STAGES` | `logic` | Determines whether there is a FF layer between the first and second stages. Setting to '1' will merge the product generation stage with the succeeding reduction stage | 0 | 0,1 |
-| `STAGE_DEPTH` | `int` | Determines how many layers should be combined before adding a FF layer | 1 | 0..`reduce_depth(WIDTH)` |
+| `STAGE_DEPTH` | `int` | Determines how many layers should be combined before adding a FF layer | 8 | 0..`reduce_depth(WIDTH)` |
 | `MERGE_REDUCE_FINAL_STAGES` | `logic` | Determines whether there is a FF layer between the final reduction layer and the third stage | 0 | 0,1 |

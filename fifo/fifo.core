@@ -24,17 +24,11 @@ filesets:
             - tb_waiver.vlt
         file_type: systemVerilogSource
 
-    fpga:
-        files:
-            - fpga/fpga_socetlib_fifo.sv
-        file_type: systemVerilogSource
-
 targets:
     default: &default
         filesets:
             - rtl
         toplevel: socetlib_fifo
-        # No parameters?
     
     sim:
         <<: *default
@@ -52,6 +46,38 @@ targets:
                     - --trace-structs
                     - --coverage
                     - -Wno-WIDTHEXPAND
+                make_options:
+                    - -j
+
+            vcs:
+                vcs_options:
+                    - -assert svaext
+                    - -debug_access+pp
+                    - -debug_access+all
+                    - -debug_pp +vcd+vcdpluson
+            modelsim:
+                vsim_options:
+                    - -vopt
+                    - -voptargs='+acc'
+                    - -t ps
+
+    sim_nonsquare:
+        <<: *default
+        description: Simulate w/TB (SIZE != DEPTH)
+        default_tool: verilator
+        filesets_append:
+            - tb
+            - tool_verilator ? (waiver)
+        toplevel: tb_socetlib_fifo
+        tools:
+            verilator:
+                verilator_options:
+                    - --binary
+                    - --trace-fst
+                    - --trace-structs
+                    - --coverage
+                    - -Wno-WIDTHEXPAND
+                    - -DTB_DEPTH=16
                 make_options:
                     - -j
 
@@ -97,22 +123,9 @@ targets:
                 xrun_options:
                     - -gui
                     - -access +rwc
-    fpga:
-        <<: *default
-        filesets_append:
-            - fpga
-        description: FPGA Wrapper
-        default_tool: quartus
-        toplevel: fpga_socetlib_fifo
-        tools:
-            quartus:
-                family: Cyclone 10 GX
-                device: 10CX220YF672E5G
-
     lint:
         <<: *default
         filesets_append:
-            - fpga
             - tb
         description: Linting
         default_tool: veriblelint

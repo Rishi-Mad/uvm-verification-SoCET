@@ -61,6 +61,15 @@ targets:
           - -GSIGNED=0
           - -CFLAGS "-DWIDTH=16 -DSIGNED=0"
 
+  tb_u20:
+    <<: *default
+    tools:
+      verilator:
+        verilator_options_append:
+          - -GWIDTH=20
+          - -GSIGNED=0
+          - -CFLAGS "-DWIDTH=20 -DSIGNED=0"
+
   tb_u24:
     <<: *default
     tools:
@@ -123,6 +132,15 @@ targets:
           - -GWIDTH=16
           - -GSIGNED=1
           - -CFLAGS "-DWIDTH=16 -DSIGNED=1"
+
+  tb_i20:
+    <<: *default
+    tools:
+      verilator:
+        verilator_options_append:
+          - -GWIDTH=20
+          - -GSIGNED=1
+          - -CFLAGS "-DWIDTH=20 -DSIGNED=1"
 
   tb_i24:
     <<: *default

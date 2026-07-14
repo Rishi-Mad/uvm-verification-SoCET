@@ -5,8 +5,8 @@ DFF-based FIFO queue for single clock domains.
 ## RTL Diagram
 ![FIFO RTL diagram, described below](./fifo.png)
 
-The FIFO is built around a `DEPTH x bits(T)` register file that holds the
-queue contents, where `T` is the data type held. Read and write pointers, each in their own register, index
+The FIFO is built around a `DEPTH x SIZE`-bit register file that holds the
+queue contents, where `SIZE` is the bit width of each entry. Read and write pointers, each in their own register, index
 into the register file to select the head and tail entries. A Pointer
 Update block consumes `WEN`, `REN`, and `clear` and updates the pointers
 accordingly. `wdata` is written into the register file at the location
@@ -30,7 +30,7 @@ Pointer Update block.
 | `empty` | `output` | `logic` | Flag indicating FIFO is empty |
 | `underrun` | `output` | `logic` | Error flag raised by reading an empty FIFO |
 | `overrun` | `output` | `logic` | Error flag raised by writing a full FIFO |
-| `count` | `output` | `logic [$clog2(DEPTH)-1 : 0]` | Current occupancy of FIFO |
+| `count` | `output` | `logic [$clog2(DEPTH+1)-1 : 0]` | Current occupancy of FIFO |
 | `rdata` | `output` | `logic [(SIZE-1):0]` | Head element of FIFO |
 
 ## Function

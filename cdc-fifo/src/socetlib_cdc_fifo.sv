@@ -16,6 +16,10 @@ module socetlib_cdc_fifo
 );
 
 	generate
+	if (FIFO_DEPTH < 1 || (FIFO_DEPTH & (FIFO_DEPTH - 1)) != 0) begin
+		$error("%m: FIFO_DEPTH must be a power of 2 greater than 0");
+	end
+
 	// ***********************************
 	// 1-Deep CDC FIFO
 	// ***********************************

@@ -13,16 +13,6 @@ filesets:
             - tb/tb_socetlib_counter.sv
         file_type: systemVerilogSource
 
-    verilator_tb:
-        files:
-            - tb/tb_socetlib_counter.cc : {file_type : cppSource}
-        file_type: verilogSource
-
-    fpga:
-        files:
-            - fpga/fpga_socetlib_counter.sv
-        file_type: systemVerilogSource
-
 targets:
     default: &default
         filesets:
@@ -38,6 +28,16 @@ targets:
             - tb
         toplevel: tb_socetlib_counter
         tools:
+            verilator:
+                verilator_options:
+                    - --binary
+                    - --timing
+                    - --trace-fst
+                    - --trace-structs
+                    - --coverage
+                    - -Wno-WIDTHEXPAND
+                make_options:
+                    - -j
             vcs:
                 vcs_options:
                     - -assert svaext
@@ -49,16 +49,6 @@ targets:
                     - -vopt
                     - -voptargs='+acc'
                     - -t ps
-
-    verilate:
-        filesets: [rtl, verilator_tb]
-        description: Simulate with Verilator
-        default_tool: verilator
-        toplevel: socetlib_counter
-        tools:
-            verilator:
-                mode: cc
-                verilator_options: ["--trace", "--trace-structs", "--report-unoptflat", "--coverage-line", "--coverage-toggle"]
 
     gui:
         <<: *default
@@ -72,22 +62,9 @@ targets:
                 xrun_options:
                     - -gui
                     - -access +rwc
-    fpga:
-        <<: *default
-        filesets_append:
-            - fpga
-        description: FPGA Wrapper
-        default_tool: quartus
-        toplevel: fpga_socetlib_counter
-        tools:
-            quartus:
-                family: Cyclone 10 GX
-                device: 10CX220YF672E5G
-
     lint:
         <<: *default
         filesets_append:
-            - fpga
             - tb
         description: Linting
         default_tool: veriblelint

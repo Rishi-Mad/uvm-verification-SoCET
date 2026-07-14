@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 module tb_socetlib_cdc_fifo;
-    localparam DATA_WIDTH = 65; // addr + data + wen
+    localparam DATA_WIDTH = 65;
     localparam ADDR_WIDTH = 4;
     
     localparam WPERIOD = 20; // write clock period
@@ -23,27 +23,23 @@ module tb_socetlib_cdc_fifo;
     int write_count = 0;
     int read_count = 0;
 
-    // Randomize class
-    class rand_data_array;
-        rand logic [DATA_WIDTH-1:0] data_array [2**ADDR_WIDTH];
+    logic [DATA_WIDTH-1:0] fifo_data [2**ADDR_WIDTH];
 
-        function void randomize_array();
-            if (!(this.randomize() == 1)) begin
-                $display("Failed to randomize data_array");
-            end
-        endfunction
+    // Randomizes an array of DATA_WIDTH-bit test words.
+    function automatic void randomize_array();
+        foreach (fifo_data[i]) begin
+            fifo_data[i] = {$urandom(), $urandom(), $urandom()};
+        end
+    endfunction
 
-        function void print_array();
-            foreach (data_array[i]) begin
-                $display("data_array[%0d] = %0h", i, data_array[i]);
-            end
-        endfunction
-    endclass
-
-    rand_data_array fifo_data;
+    function automatic void print_array();
+        foreach (fifo_data[i]) begin
+            $display("fifo_data[%0d] = %0h", i, fifo_data[i]);
+        end
+    endfunction
 
     // DUT
-    socetlib_cdc_fifo #(.DATA_WIDTH(DATA_WIDTH), .ADDR_WIDTH(ADDR_WIDTH)) DUT (
+    socetlib_cdc_fifo #(.DATA_WIDTH(DATA_WIDTH), .FIFO_DEPTH(2**ADDR_WIDTH)) DUT (
         .wdata(tb_wdata),
         .wfull(tb_wfull),
         .winc(tb_winc),
@@ -146,16 +142,15 @@ module tb_socetlib_cdc_fifo;
 
         reset_dut();
 
-        fifo_data = new();
-        fifo_data.randomize_array();
-        fifo_data.print_array();
+        randomize_array();
+        print_array();
 
         //*****************************************************
         // Test 1: Write max entries to fill FIFO
         //*****************************************************
 
         for (int i = 0; i < 2**ADDR_WIDTH; i++) begin
-            write_data(fifo_data.data_array[i]);
+            write_data(fifo_data[i]);
         end
 
         //*****************************************************
@@ -171,7 +166,7 @@ module tb_socetlib_cdc_fifo;
         //*****************************************************
 
         for (int i = 0; i < 2**ADDR_WIDTH; i++) begin
-            read_data(fifo_data.data_array[i]);
+            read_data(fifo_data[i]);
         end
 
         //*****************************************************
@@ -187,22 +182,22 @@ module tb_socetlib_cdc_fifo;
         // Test 5: Write and read simultaneously
         //*****************************************************
 
-        fifo_data.randomize_array();
+        randomize_array();
 
         // pre-load some data
-        write_data(fifo_data.data_array[0]);
-        write_data(fifo_data.data_array[1]);
+        write_data(fifo_data[0]);
+        write_data(fifo_data[1]);
 
         fork
             begin : write
                 for (int i = 2; i < 2**ADDR_WIDTH; i++) begin
-                    write_data(fifo_data.data_array[i]);
+                    write_data(fifo_data[i]);
                 end
             end
             begin : read
                 for (int i = 0; i < 2**ADDR_WIDTH; i++) begin
                     wait (!tb_rempty); // rclk is faster than wclk so this is required otherwise it will read empty
-                    read_data(fifo_data.data_array[i]);
+                    read_data(fifo_data[i]);
                 end
             end
         join

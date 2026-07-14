@@ -59,16 +59,6 @@ targets:
                     - -voptargs='+acc'
                     - -t ps
 
-    verilate:
-        filesets: [rtl, verilator_tb]
-        description: Simulate with Verilator
-        default_tool: verilator
-        toplevel: socetlib_synchronizer
-        tools:
-            verilator:
-                mode: cc
-                verilator_options: ["--trace", "--trace-structs", "--report-unoptflat", "--coverage-line", "--coverage-toggle"]
-
     gui:
         <<: *default
         description: Simulate TB with GUI

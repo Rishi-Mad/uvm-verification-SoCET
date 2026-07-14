@@ -1,3 +1,5 @@
+#include <chrono>
+#include <csignal>
 #include <iostream>
 #include <queue>
 #include <stdint.h>
@@ -7,6 +9,13 @@
 #include "verilated_fst_c.h"
 
 #define MAX_SIM_TIME 100
+
+// Mirrors the -GNUM_STAGES value passed to the HDL build (see opt_pipe.core's
+// sim/sim_stages0/sim_stages1 targets, which pass this via -CFLAGS to keep
+// the two in sync).
+#ifndef NUM_STAGES
+#define NUM_STAGES 2
+#endif
 
 typedef struct {
     vluint64_t end_cycle;
@@ -96,16 +105,16 @@ int main(int argc, char **argv) {
         dut.ready = 0;
         dut.in = 0;
 
-        // Create a new test vector
         test_vector_t test;
         test.expected = rand() & 0xFFFF;
-        test.end_cycle = sim_time + (2 * 2); // NUM_STAGES=2 but we double count sim time
+        test.end_cycle = sim_time + (2 * NUM_STAGES); // sim time increments by 2 per cycle
         tests.push(test);
         dut.ready = 1;
         dut.in = test.expected;
+        dut.eval();
 
         // If the DUT is done then check the top vector
-        if (tests.size() > 0 && tests.front().end_cycle == sim_time) {
+        if (!tests.empty() && tests.front().end_cycle == sim_time) {
             test_vector_t front = tests.front();
             tests.pop();
             checkDone(front.expected);

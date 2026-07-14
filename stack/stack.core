@@ -18,11 +18,6 @@ filesets:
             - tb_waiver.vlt
         file_type: systemVerilogSource
 
-    fpga:
-        files:
-            - fpga/fpga_socetlib_stack.sv
-        file_type: systemVerilogSource
-
 targets:
     default: &default
         filesets:
@@ -42,6 +37,7 @@ targets:
             verilator:
                 verilator_options:
                     - --binary
+                    - --assert
                     - --trace-fst
                     - --trace-structs
                     - --coverage
@@ -72,22 +68,9 @@ targets:
                 xrun_options:
                     - -gui
                     - -access +rwc
-    fpga:
-        <<: *default
-        filesets_append:
-            - fpga
-        description: FPGA Wrapper
-        default_tool: quartus
-        toplevel: fpga_socetlib_stack
-        tools:
-            quartus:
-                family: Cyclone 10 GX
-                device: 10CX220YF672E5G
-
     lint:
         <<: *default
         filesets_append:
-            - fpga
             - tb
         description: Linting
         default_tool: veriblelint

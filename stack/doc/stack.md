@@ -21,7 +21,7 @@ The stack is built around a `DEPTH x bits(T)` register file holding the contents
 | `empty` | `output` | `logic` | Flag indicating stack is empty |
 | `underflow` | `output` | `logic` | Error flag raised by reading an empty stack |
 | `overflow` | `output` | `logic` | Error flag raised by writing a full stack |
-| `count` | `output` | `logic [$clog2(DEPTH)-1 : 0]` | Current occupancy of stack |
+| `count` | `output` | `logic [$clog2(DEPTH) : 0]` | Current occupancy of stack |
 | `rdata` | `output` | `T` | Top element of stack |
 
 ## Function

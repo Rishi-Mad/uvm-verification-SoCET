@@ -13,7 +13,7 @@ module fifo_wrapper(
     output logic [31:0] rdata
 );
     socetlib_fifo #(
-        .T(logic [31:0]),
+        .SIZE(32),
         .DEPTH(8)
     ) fifo (
         .CLK(clk),

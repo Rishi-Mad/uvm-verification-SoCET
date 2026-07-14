@@ -8,20 +8,18 @@
 
 module tb_socetlib_fifo();
 
-    localparam ADDR_BITS = $clog2(`TB_DEPTH);
-
     logic CLK = 0, nRST;
     logic WEN, REN;
     logic clear, full, empty;
     logic [`TB_WIDTH-1:0] wdata, rdata;
     logic overrun, underrun;
-    logic [ADDR_BITS-1:0] count;
+    logic [$clog2(`TB_DEPTH+1)-1:0] count;
 
     int tb_count;
     string tb_block;
 
     socetlib_fifo #(
-        .T(logic [`TB_WIDTH-1:0]),
+        .SIZE(`TB_WIDTH),
         .DEPTH(`TB_DEPTH)
     ) DUT (
         .*

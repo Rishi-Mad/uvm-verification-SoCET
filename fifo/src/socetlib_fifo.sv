@@ -19,7 +19,6 @@ module socetlib_fifo #(
     // Parameter checking
     //
     // Width can be any number of bits > 1, but depth must be a power-of-2 to accomodate addressing scheme
-    // TODO: 
     generate
         if(DEPTH == 0 || (DEPTH & (DEPTH - 1)) != 0) begin
             $error("%m: DEPTH must be a power of 2 >= 1!");
@@ -31,7 +30,7 @@ module socetlib_fifo #(
     logic overrun_next, underrun_next;
     logic [ADDR_BITS-1:0] write_ptr, write_ptr_next, read_ptr, read_ptr_next;
     logic [$clog2(DEPTH+1)-1:0] count_next;
-    logic [(SIZE-1):0] [DEPTH-1:0] fifo, fifo_next;  
+    logic [DEPTH-1:0] [SIZE-1:0] fifo, fifo_next;
 
     always_ff @(posedge CLK, negedge nRST) begin
         if(!nRST) begin

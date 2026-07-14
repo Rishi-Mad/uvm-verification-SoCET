@@ -24,7 +24,7 @@ targets:
         filesets:
             - rtl
             - tb
-        description: Simulate w/TB
+        description: Simulate w/TB (NUM_STAGES=2)
         default_tool: verilator
         tools:
             verilator:
@@ -38,3 +38,54 @@ targets:
                     - --trace-structs
                     - -GWIDTH=8
                     - -GNUM_STAGES=2
+                    - -CFLAGS
+                    - -DNUM_STAGES=2
+
+    # NUM_STAGES=0 (pure combinational passthrough) and NUM_STAGES=1 (the
+    # smallest registered case) each get their own
+    # target so both are exercised by CI, not just the NUM_STAGES=2 default.
+    # -CFLAGS -DNUM_STAGES=N keeps the C++ testbench's latency math (see
+    # tb/opt_pipe_tb.cc) in sync with the HDL's -GNUM_STAGES=N.
+    sim_stages0:
+        <<: *default
+        filesets:
+            - rtl
+            - tb
+        description: Simulate w/TB (NUM_STAGES=0, passthrough)
+        default_tool: verilator
+        tools:
+            verilator:
+                verilator_options:
+                    - --assert
+                    - -Wno-SYMRSVDWORD
+                    - -Wno-ENUMVALUE
+                    - -Wno-TIMESCALEMOD
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - -GWIDTH=8
+                    - -GNUM_STAGES=0
+                    - -CFLAGS
+                    - -DNUM_STAGES=0
+
+    sim_stages1:
+        <<: *default
+        filesets:
+            - rtl
+            - tb
+        description: Simulate w/TB (NUM_STAGES=1)
+        default_tool: verilator
+        tools:
+            verilator:
+                verilator_options:
+                    - --assert
+                    - -Wno-SYMRSVDWORD
+                    - -Wno-ENUMVALUE
+                    - -Wno-TIMESCALEMOD
+                    - --trace
+                    - --trace-fst
+                    - --trace-structs
+                    - -GWIDTH=8
+                    - -GNUM_STAGES=1
+                    - -CFLAGS
+                    - -DNUM_STAGES=1

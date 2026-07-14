@@ -4,10 +4,6 @@
     `define SR_SIZE_BITS 8
 `endif
 
-`ifndef MSB
-    `define MSB 1
-`endif
-
 module tb_socetlib_shift_reg();
   // Define parameters
   // Common parameters
@@ -27,7 +23,12 @@ module tb_socetlib_shift_reg();
   logic   tb_check;
 
   // Declare the Test Bench Signals for Expected Results
+  // tb_expected_output tracks the MSB-first DUT; tb_expected_output_lsb
+  // tracks the LSB-first DUT. The two only diverge mid-stream when the
+  // incoming bit stream isn't direction-symmetric (see TEST 3) -- every
+  // other test drives an identical expected value into both.
   logic [SR_MAX_BIT:0] tb_expected_output;
+  logic [SR_MAX_BIT:0] tb_expected_output_lsb;
   logic tb_test_data [];
 
   // Declare DUT Connection Signals
@@ -38,6 +39,9 @@ module tb_socetlib_shift_reg();
   logic                tb_parallel_load;
   logic [SR_MAX_BIT:0] tb_parallel_in;
   logic [SR_MAX_BIT:0] tb_parallel_out;
+  logic                tb_serial_out;
+  logic [SR_MAX_BIT:0] tb_parallel_out_lsb;
+  logic                tb_serial_out_lsb;
 
 // Task for standard DUT reset procedure
   task reset_dut;
@@ -62,6 +66,9 @@ module tb_socetlib_shift_reg();
   endtask
 
   // Task to cleanly and consistently check DUT output values
+  // Checks both the MSB-first DUT (parallel_out/serial_out) and the
+  // LSB-first DUT (parallel_out_lsb/serial_out_lsb) against their
+  // respective expected values every time it's called.
   task check_output;
     input string check_tag;
   begin
@@ -73,6 +80,30 @@ module tb_socetlib_shift_reg();
     else begin // Check failed
       tb_mismatch = 1'b1;
       $error("Incorrect parallel output %s during %s test case", check_tag, tb_test_case);
+    end
+
+    if(tb_expected_output[SR_MAX_BIT] == tb_serial_out) begin
+      $info("Correct MSB-first serial output %s during %s test case", check_tag, tb_test_case);
+    end
+    else begin
+      tb_mismatch = 1'b1;
+      $error("Incorrect MSB-first serial output %s during %s test case", check_tag, tb_test_case);
+    end
+
+    if(tb_expected_output_lsb == tb_parallel_out_lsb) begin
+      $info("Correct LSB-first parallel output %s during %s test case", check_tag, tb_test_case);
+    end
+    else begin
+      tb_mismatch = 1'b1;
+      $error("Incorrect LSB-first parallel output %s during %s test case", check_tag, tb_test_case);
+    end
+
+    if(tb_expected_output_lsb[0] == tb_serial_out_lsb) begin
+      $info("Correct LSB-first serial output %s during %s test case", check_tag, tb_test_case);
+    end
+    else begin
+      tb_mismatch = 1'b1;
+      $error("Incorrect LSB-first serial output %s during %s test case", check_tag, tb_test_case);
     end
 
     // Wait some small amount of time so check pulse timing is visible on waves
@@ -138,18 +169,26 @@ module tb_socetlib_shift_reg();
     #(CLK_PERIOD/2.0);
   end
 
-/* verilator lint_off PINMISSING */
-
-  // DUT Portmap
-  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(`MSB), .RESET_VAL(INACTIVE_VALUE)) DUT
-                    (.clk(tb_clk), .nRST(tb_nRST), 
-                    .serial_in(tb_serial_in), 
+  // DUT Portmap -- MSB-first and LSB-first instances share the same driving
+  // stimulus so both SHIFT_MSB configurations get exercised by every test
+  // case below (see check_output).
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(1), .RESET_VAL(INACTIVE_VALUE)) DUT
+                    (.clk(tb_clk), .nRST(tb_nRST),
+                    .serial_in(tb_serial_in),
                     .shift_enable(tb_shift_enable),
                     .parallel_load(tb_parallel_load),
                     .parallel_in(tb_parallel_in),
+                    .serial_out(tb_serial_out),
                     .parallel_out(tb_parallel_out));
 
-/* verilator lint_on PINMISSING */
+  socetlib_shift_reg #(.NUM_BITS(`SR_SIZE_BITS), .SHIFT_MSB(0), .RESET_VAL(INACTIVE_VALUE)) DUT_LSB
+                    (.clk(tb_clk), .nRST(tb_nRST),
+                    .serial_in(tb_serial_in),
+                    .shift_enable(tb_shift_enable),
+                    .parallel_load(tb_parallel_load),
+                    .parallel_in(tb_parallel_in),
+                    .serial_out(tb_serial_out_lsb),
+                    .parallel_out(tb_parallel_out_lsb));
 
   // Test bench main process
   initial begin
@@ -185,6 +224,7 @@ module tb_socetlib_shift_reg();
 
     // Check that internal state was correctly reset
     tb_expected_output = RESET_OUTPUT_VALUE;
+    tb_expected_output_lsb = RESET_OUTPUT_VALUE;
     check_output("after reset applied");
 
     // Check that the reset value is maintained during a clock cycle
@@ -209,6 +249,7 @@ module tb_socetlib_shift_reg();
 
     // Define the expected result
     tb_expected_output = '0;
+    tb_expected_output_lsb = '0;
 
     // Contiguously stream enough zeros to fill the shift register
     send_stream(tb_test_data);
@@ -227,13 +268,17 @@ module tb_socetlib_shift_reg();
 
     // Bootstrap the expected output signal
     tb_expected_output = RESET_OUTPUT_VALUE;
+    tb_expected_output_lsb = RESET_OUTPUT_VALUE;
 
     // Disconiguously stream out all of the bits in the provided input vector
     for(tb_bit_num = 0; tb_bit_num < tb_test_data.size(); tb_bit_num++) begin
       // Send the current bit
       send_bit(tb_test_data[tb_bit_num]);
-      // Update expected output value
+      // Update expected output value.
+      // MSB-first: new bit enters at the LSB, existing bits shift toward the MSB.
       tb_expected_output = {tb_expected_output[(SR_MAX_BIT-1):0], 1'b0};
+      // LSB-first: new bit enters at the MSB, existing bits shift toward the LSB.
+      tb_expected_output_lsb = {1'b0, tb_expected_output_lsb[SR_MAX_BIT:1]};
 
       // Check that the current bit got pulled in
       $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
@@ -257,6 +302,7 @@ module tb_socetlib_shift_reg();
 
     // Define the expected result
     tb_expected_output = '1;
+    tb_expected_output_lsb = '1;
 
     // Contiguously stream enough zeros to fill the shift register
     send_stream(tb_test_data);
@@ -269,6 +315,7 @@ module tb_socetlib_shift_reg();
     tb_test_case = "Parallel load random";
 
     tb_expected_output = (`SR_SIZE_BITS)'($urandom);
+    tb_expected_output_lsb = tb_expected_output;
     load_value(tb_expected_output);
 
     check_output("after parallel load");
