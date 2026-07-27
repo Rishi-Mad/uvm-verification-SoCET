@@ -23,7 +23,7 @@ targets:
     sim:
         <<: *default
         description: Simulate w/TB
-        default_tool: xcelium
+        default_tool: verilator
         filesets_append:
             - tb
         toplevel: tb_socetlib_counter

@@ -1,3 +1,4 @@
+#include <chrono>
 #include <getopt.h>
 #include <iostream>
 #include <limits>
@@ -5,6 +6,7 @@
 #include <random>
 #include <signal.h>
 #include <stdint.h>
+#include <type_traits>
 
 #include "Vwt_mult.h"
 #include "Vwt_mult_wt_mult_pkg.h"
@@ -77,6 +79,16 @@ constexpr __uint128_t max_n_bit(int n) {
     }
     return ((__int128_t)1 << n) - 1;
 }
+
+// Smallest std-permitted unsigned integer type able to represent every WIDTH-bit value.
+// std::uniform_int_distribution only accepts short/int/long/long long and their unsigned
+// forms, so char-sized in_t must widen to unsigned short; otherwise dropping the sign is
+// enough, since MAX (= 2^WIDTH - 1) never fits the signed form when WIDTH == bits(in_t).
+// Drawing through this type keeps both of the distribution's preconditions satisfied
+// (permitted IntType, and 0 <= MAX), which is what makes the draw uniform by contract.
+template <typename T>
+using draw_t = std::conditional_t<(sizeof(T) <= sizeof(unsigned short)), unsigned short,
+                                  std::make_unsigned_t<T>>;
 
 typedef struct {
     in_t a;
@@ -208,7 +220,7 @@ int main(int argc, char **argv) {
 
     cmdArgs(argc, argv);
     std::mt19937 generator;
-    std::uniform_int_distribution<in_t> distr(0, MAX);
+    std::uniform_int_distribution<draw_t<in_t>> distr(0, (draw_t<in_t>)MAX);
     if (use_seed) {
         generator.seed(seed);
     } else {
