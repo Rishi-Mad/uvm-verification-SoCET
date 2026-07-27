@@ -105,37 +105,7 @@ module wt_reduction#(
 
             localparam logic [2*WIDTH-1:0] [31:0] NEXT_DEPTH = next_depth();
 
-            // Next stage in the reduction
-            wt_reduction #(
-                .WIDTH(WIDTH),
-                .STAGE_DEPTH(STAGE_DEPTH),
-                .CURR_STAGE_DEPTH((CURR_STAGE_DEPTH + STAGE_DEPTH - 1) % STAGE_DEPTH),
-                .DEPTH(NEXT_DEPTH)
-            ) reduce (
-                .CLK(CLK),
-                .nRST(nRST),
-                .ready(next_ready),
-                .partial_prods(next_partial_prods),
-                .done(done),
-                .out_a(out_a),
-                .out_b(out_b)
-            );
-
-            if (CURR_STAGE_DEPTH == 0) begin
-                always_ff @(posedge CLK, negedge nRST) begin
-                    if (!nRST) begin
-                        next_ready <= 0;
-                        next_partial_prods <= '0;
-                    end else begin
-                        next_ready <= ready;
-                        next_partial_prods <= next_next_partial_prods;
-                    end
-                end
-            end else begin
-                assign next_ready = ready;
-                assign next_partial_prods = next_next_partial_prods;
-            end
-
+            // Do the reduction
             logic seen_carry;
             logic [2*WIDTH-1:0] [31:0] curr_depth;
             int saved_depth;
@@ -217,6 +187,38 @@ module wt_reduction#(
                     end
                 end
             end
+
+            // Prep pps to send to next stage
+            logic [WIDTH*WIDTH*2-1:0] pp_cast, reduce_pp_cast;
+            assign pp_cast = next_next_partial_prods;
+            opt_pipe #(
+                .WIDTH(WIDTH*WIDTH*2),
+                .NUM_STAGES(CURR_STAGE_DEPTH == 1)
+            ) next_pp_pipe (
+                .CLK(CLK),
+                .nRST(nRST),
+                .ready(ready),
+                .in(pp_cast),
+                .done(next_ready),
+                .out(reduce_pp_cast)
+            );
+            assign next_partial_prods = reduce_pp_cast;
+
+            // Next stage in the reduction
+            wt_reduction #(
+                .WIDTH(WIDTH),
+                .STAGE_DEPTH(STAGE_DEPTH),
+                .CURR_STAGE_DEPTH(STAGE_DEPTH == 1 ? 1 : (CURR_STAGE_DEPTH + STAGE_DEPTH - 1) % STAGE_DEPTH),
+                .DEPTH(NEXT_DEPTH)
+            ) reduce (
+                .CLK(CLK),
+                .nRST(nRST),
+                .ready(next_ready),
+                .partial_prods(next_partial_prods),
+                .done(done),
+                .out_a(out_a),
+                .out_b(out_b)
+            );
 
             logic [2*WIDTH-1:0] expected_out;
             logic [2*WIDTH-1:0] actual_out;

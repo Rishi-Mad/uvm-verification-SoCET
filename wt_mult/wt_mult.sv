@@ -19,10 +19,9 @@ module wt_mult#(
     input logic ready,
     input logic [WIDTH-1:0] a, b,
     output logic done,
-    output logic [WIDTH*2-1:0] out,
-    output logic [WIDTH*2-1:0] [WIDTH-1:0] reduce_partial_prods
+    output logic [WIDTH*2-1:0] out
 );
-    logic [WIDTH*2-1:0] [WIDTH-1:0] partial_prods;
+    logic [WIDTH*2-1:0] [WIDTH-1:0] partial_prods, reduce_partial_prods;
     logic reduce_ready, reduce_done;
     logic [WIDTH*2-1:0] out_a, out_b;
     logic [WIDTH*2-1:0] int_out;
@@ -53,22 +52,20 @@ module wt_mult#(
         .partial_prods(partial_prods)
     );
 
-    generate
-        if (MERGE_PROD_GEN_REDUCE_STAGES) begin
-            assign reduce_ready = ready;
-            assign reduce_partial_prods = partial_prods;
-        end else begin
-            always_ff @(posedge CLK, negedge nRST) begin
-                if (!nRST) begin
-                    reduce_ready <= 0;
-                    reduce_partial_prods <= '0;
-                end else begin
-                    reduce_ready <= ready;
-                    reduce_partial_prods <= partial_prods;
-                end
-            end
-        end
-    endgenerate
+    logic [WIDTH*WIDTH*2-1:0] pp_cast, reduce_pp_cast;
+    assign pp_cast = partial_prods;
+    opt_pipe #(
+        .WIDTH(WIDTH*WIDTH*2),
+        .NUM_STAGES(!MERGE_PROD_GEN_REDUCE_STAGES)
+    ) pp_pipe (
+        .CLK(CLK),
+        .nRST(nRST),
+        .ready(ready),
+        .in(pp_cast),
+        .done(reduce_ready),
+        .out(reduce_pp_cast)
+    );
+    assign reduce_partial_prods = reduce_pp_cast;
 
     // Stage 2: Reduce partial products
     localparam logic [WIDTH*2-1:0] [31:0] DEPTH = init_depth();
@@ -76,7 +73,7 @@ module wt_mult#(
     wt_reduction #(
         .WIDTH(WIDTH),
         .STAGE_DEPTH(STAGE_DEPTH),
-        .CURR_STAGE_DEPTH(STAGE_DEPTH - !MERGE_PROD_GEN_REDUCE_STAGES),
+        .CURR_STAGE_DEPTH(STAGE_DEPTH),
         .DEPTH(DEPTH)
     ) reduce (
         .CLK(CLK),
@@ -90,20 +87,15 @@ module wt_mult#(
 
     // Stage 3: Add remaining two values
     assign int_out = out_a + out_b;
-    generate
-        if (MERGE_REDUCE_FINAL_STAGES) begin
-            assign out = SIGNED ? {!int_out[WIDTH*2-1], int_out[WIDTH*2-2:0]} : int_out;
-            assign done = reduce_done;
-        end else begin
-            always_ff @(posedge CLK, negedge nRST) begin
-                if (!nRST) begin
-                    out <= 0;
-                    done <= 0;
-                end else begin
-                    out <= SIGNED ? {!int_out[WIDTH*2-1], int_out[WIDTH*2-2:0]} : int_out;
-                    done <= reduce_done;
-                end
-            end
-        end
-    endgenerate
+    opt_pipe #(
+        .WIDTH(WIDTH*2),
+        .NUM_STAGES(!MERGE_REDUCE_FINAL_STAGES)
+    ) sum_pipe (
+        .CLK(CLK),
+        .nRST(nRST),
+        .ready(reduce_done),
+        .in(SIGNED ? {!int_out[WIDTH*2-1], int_out[WIDTH*2-2:0]} : int_out),
+        .done(done),
+        .out(out)
+    );
 endmodule

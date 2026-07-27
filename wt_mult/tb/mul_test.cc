@@ -251,6 +251,8 @@ int main(int argc, char **argv) {
         dut.b = test.b;
         dut.ready = 1;
 
+        tick(dut, m_trace);
+
         // If the DUT is done then check the top vector
         if (tests.size() > 0 && sim_time >= tests.front().end_cycle) {
             test_vector_t front = tests.front();
@@ -258,8 +260,6 @@ int main(int argc, char **argv) {
             out_t out = cast_out<out_t, decltype(dut.out)>(dut.out);
             check(front.expected & max_n_bit(WIDTH * 2), out, front.a, front.b);
         }
-
-        tick(dut, m_trace);
     }
 
     auto tend = std::chrono::high_resolution_clock::now();

@@ -4,6 +4,8 @@ description: Generalized Wallace Tree Multiplier
 
 filesets:
   rtl:
+    depend:
+      - socet:digital-lib:opt_pipe:0.0.1
     files:
       - wt_mult.sv
       - wt_reduction.sv
