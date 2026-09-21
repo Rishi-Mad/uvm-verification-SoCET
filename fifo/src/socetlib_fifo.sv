@@ -20,9 +20,11 @@ module socetlib_fifo #(
     //
     // Width can be any number of bits > 1, but depth must be a power-of-2 to accomodate addressing scheme
     generate
+`ifndef QUARTUS
         if(DEPTH == 0 || (DEPTH & (DEPTH - 1)) != 0) begin
             $error("%m: DEPTH must be a power of 2 >= 1!");
         end
+`endif
     endgenerate
     
     localparam int ADDR_BITS = $clog2(DEPTH);

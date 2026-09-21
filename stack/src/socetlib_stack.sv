@@ -20,6 +20,7 @@ module socetlib_stack #(
 );
 
     generate
+`ifndef QUARTUS
         if(DEPTH < 1 || (DEPTH & (DEPTH - 1)) != 0) begin
             $error("%m: DEPTH must be a power of 2 greater than 0");
         end
@@ -27,6 +28,7 @@ module socetlib_stack #(
         if(ADDR_BITS != $clog2(DEPTH)) begin
             $error("%m: ADDR_BITS is an automatically computed value and should not be changed.\n");
         end
+`endif
     endgenerate
 
     T [DEPTH-1:0] stack, stack_next;
