@@ -4,6 +4,7 @@
 module tb_top;
 import uvm_pkg::*;
 `include "uvm_macros.svh"
+import cdc_fifo_pkg::*;
 
 parameter int DATA_WIDTH = 4;
 
@@ -47,7 +48,7 @@ initial begin
 end
 
 initial begin
-    uvm_config_db#(virtual cdc_fifo_if)::set( // UVM Configuration Database
+    uvm_config_db#(virtual cdc_fifo_if #(DATA_WIDTH))::set( // UVM Configuration Database
     null,
     "*", // Avail to components
     "vif", // Name

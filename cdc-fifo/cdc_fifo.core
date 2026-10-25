@@ -14,6 +14,27 @@ filesets:
         files:
             - tb/cdc_tb.sv
         file_type: systemVerilogSource
+    
+    uvm_tb:
+        files:
+            - tb/Verification_F26/interface.sv
+
+            # Write agent (included by cdc_fifo_pkg.sv)
+            - tb/Verification_F26/write_agent/cdc_write_item.sv: {is_include_file: true, include_path: tb/Verification_F26}
+            - tb/Verification_F26/write_agent/cdc_write_sequence.sv: {is_include_file: true, include_path: tb/Verification_F26}
+            - tb/Verification_F26/write_agent/cdc_write_sequencer.sv: {is_include_file: true, include_path: tb/Verification_F26}
+            - tb/Verification_F26/write_agent/cdc_write_driver.sv: {is_include_file: true, include_path: tb/Verification_F26}
+            - tb/Verification_F26/write_agent/cdc_write_monitor.sv: {is_include_file: true, include_path: tb/Verification_F26}
+            - tb/Verification_F26/write_agent/cdc_write_agent.sv: {is_include_file: true, include_path: tb/Verification_F26}
+
+            # UVM test
+            - tb/Verification_F26/tests/cdc_fifo_basic_test.sv: {is_include_file: true, include_path: tb/Verification_F26}
+
+            # Package and top-level module
+            - tb/Verification_F26/cdc_fifo_pkg.sv
+            - tb/Verification_F26/tb_top.sv
+
+        file_type: systemVerilogSource
 
 targets:
     default: &default
@@ -21,7 +42,22 @@ targets:
             - rtl
         toplevel: socetlib_cdc_fifo
         # No parameters?
-    
+
+    uvm_sim:
+        <<: *default
+        description: CDC FIFO UVM Verification
+        default_tool: verilator
+        filesets_append:
+            - uvm_tb
+        toplevel: tb_top
+
+        tools:
+            verilator:
+                verilator_options:
+                    - --binary
+                    - --timing
+                    - -Wno-fatal
+
     sim:
         <<: *default
         description: Simulate w/TB

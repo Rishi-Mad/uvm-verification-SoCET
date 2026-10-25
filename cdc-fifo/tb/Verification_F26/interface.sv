@@ -26,5 +26,13 @@ clocking read_cb @(posedge rclk);
     input rempty;
 endclocking
 
+clocking write_mon_cb @(posedge wclk);
+    default input #1step;
+    input winc;
+    input wdata;
+    input wfull;
+    input wnrst;
+endclocking
+
 // Interface to DUT
 endinterface

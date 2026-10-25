@@ -29,10 +29,7 @@ class cdc_write_monitor #(parameter int DATA_WIDTH = 4) extends uvm_monitor;
             @(vif.write_cb);
 
             // Check whether the FIFO accepted a write
-            if (vif.wnrst === 1'b1 &&
-                vif.write_cb.winc === 1'b1 &&
-                vif.write_cb.wfull === 1'b0) begin
-
+            if (vif.wnrst === 1'b1 && vif.write_cb.winc === 1'b1 && vif.write_cb.wfull === 1'b0) begin
                 // Create a transaction containing observed data
                 observed_item = cdc_write_item #(DATA_WIDTH)::type_id::create("observed_item");
                 observed_item.data = vif.write_cb.wdata;
@@ -44,7 +41,5 @@ class cdc_write_monitor #(parameter int DATA_WIDTH = 4) extends uvm_monitor;
                 // Send transaction to scoreboard
                 ap.write(observed_item);
             end
-        end
     endtask
-
 endclass
